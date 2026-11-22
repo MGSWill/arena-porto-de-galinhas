@@ -7,11 +7,10 @@
 **Calmos:** Quiz Relâmpago, Desenha e Adivinha, Quem é o Impostor?, Stop! (Adedanha), Quem É Mais Provável? e Jogo da Memória.
 
 ## Como jogar
-1. Uma pessoa toca em **Criar sala** e recebe um código de 4 letras.
-2. Os outros digitam o código e tocam em **Entrar**, ou abrem o link de convite.
-3. Cada um coloca o nome, escolhe o time e o boneco, e qualquer um escolhe o jogo.
+1. Todos abrem o app. A sala é automática: o primeiro celular vira a sala e os outros entram sozinhos.
+2. Cada um coloca o nome, escolhe o time e o boneco, e qualquer um escolhe o jogo.
 
-Todos precisam de internet. Se quem criou a sala sair, a sala fecha e é preciso criar outra.
+Todos precisam de internet. Se o celular que é a sala fechar o app, outro celular assume a sala automaticamente em alguns segundos.
 
 ## Publicar no GitHub Pages
 1. Crie um repositório público (ex.: `arena-porto-de-galinhas`).

@@ -94,10 +94,8 @@ input:focus{outline:none;border-color:var(--sol)}
     <h1>Arena <span>Porto de Galinhas</span></h1>
     <p class="sub">15 jogos · cada um no seu celular 🌴</p>
     <div class="how" id="salaBox" style="margin-top:0">
-      <b>Sala</b> <span id="salaInfo" style="color:#b9cfd3">: crie uma sala ou entre com o código dos amigos.</span>
-      <div class="row2" id="salaBtns"><button class="btn" id="mkRoom" style="margin-top:10px">Criar sala</button></div>
-      <div class="gin" id="salaJoin"><input id="codeIn" maxlength="4" placeholder="Código" style="text-transform:uppercase"><button id="joinRoom">Entrar</button></div>
-      <div class="row2" id="salaShare" style="display:none"><button class="btn ghost" id="shareRoom" style="margin-top:10px">📤 Convidar</button><button class="btn ghost" id="leaveRoom" style="margin-top:10px">Sair da sala</button></div>
+      <b>Sala da galera</b> <span id="salaInfo" style="color:#b9cfd3">· conectando…</span>
+      <div class="row2" id="salaBtns" style="display:none"><button class="btn ghost" id="mkRoom" style="margin-top:10px">🔄 Reconectar</button></div>
     </div>
     <label>Seu nome</label>
     <input id="nm" maxlength="12" placeholder="Seu apelido">
@@ -266,37 +264,34 @@ room={peers(){const a=[{peer:NET.myId,sameTab:true,isMe:true,kind:'viewer',prese
  presence(p){for(const k in p){if(p[k]===null)delete NET.pres[k];else NET.pres[k]=p[k]}if(NET.ok&&!NET.host&&NET.hc&&NET.hc.open){try{NET.hc.send({t:'p',pr:NET.pres})}catch(e){}}return Promise.resolve()},
  onConnection(f){NET.ls.push(f);setTimeout(()=>f(NET.ok),0);return()=>{}},connected(){return NET.ok}};
 room.onConnection(c=>{connected=c;renderLobby()});
-function rcode(){const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=A[Math.floor(Math.random()*A.length)];return c}
-function netReset(){try{if(NET.bt)clearInterval(NET.bt);if(NET.peer)NET.peer.destroy()}catch(e){}NET.peer=null;NET.host=false;NET.hc=null;NET.others=new Map();NET.conns=new Map();NET.myId='0solo';NET.code='';netSet(false)}
-function createRoom(tries){if(typeof Peer==='undefined'){NET.err='Sem internet para criar sala (modo treino sozinho).';renderSala();return}
- netReset();const code=rcode();NET.err='Criando sala…';renderSala();
- const pe=new Peer(PREFIX+code.toLowerCase(),{debug:0});NET.peer=pe;
- pe.on('open',()=>{NET.host=true;NET.code=code;NET.myId='0'+code;NET.err='';try{history.replaceState(null,'','#'+code)}catch(e){}netSet(true);
+const FIXED_ID='arena-pg-mgswill-sala-v1';let netTry=0,joinTimer=null;
+function netReset(){try{if(NET.bt)clearInterval(NET.bt);clearTimeout(joinTimer);if(NET.peer)NET.peer.destroy()}catch(e){}NET.peer=null;NET.host=false;NET.hc=null;NET.others=new Map();NET.conns=new Map();NET.myId='0solo';NET.code='';netSet(false)}
+function retry(fn,ms){netTry++;if(netTry>12){NET.err='Não consegui conectar. Toque em Reconectar.';renderSala();return}setTimeout(fn,ms||800+Math.random()*1200)}
+function autoConnect(){netTry=0;tryCreate()}
+// tenta ser a sala; se já existir alguém, entra nela
+function tryCreate(){if(typeof Peer==='undefined'){NET.err='sem internet (modo treino sozinho)';renderSala();return}
+ netReset();NET.err='conectando…';renderSala();const pe=new Peer(FIXED_ID,{debug:0});NET.peer=pe;
+ pe.on('open',()=>{NET.host=true;NET.code='galera';NET.myId='0host';NET.err='';netTry=0;netSet(true);
   NET.bt=setInterval(()=>{const all=[[NET.myId,NET.pres]];for(const[id,pr]of NET.others)all.push([id,pr]);for(const[id,c]of NET.conns){if(!c.open)continue;if(c.dataChannel&&c.dataChannel.bufferedAmount>65536)continue;try{c.send({t:'a',l:all.filter(x=>x[0]!==id)})}catch(e){}}},55)});
  pe.on('connection',c=>{const id=String((c.metadata&&c.metadata.id)||('1'+Math.random().toString(36).slice(2,8))).slice(0,20);
   c.on('open',()=>{NET.conns.set(id,c)});c.on('data',d=>{if(d&&d.t==='p'&&d.pr&&typeof d.pr==='object')NET.others.set(id,d.pr)});
   const bye=()=>{NET.conns.delete(id);NET.others.delete(id)};c.on('close',bye);c.on('error',bye)});
- pe.on('error',e=>{if(e&&e.type==='unavailable-id'&&(tries||0)<4){createRoom((tries||0)+1);return}NET.err='Erro na sala: '+(e&&e.type||'desconhecido');renderSala()});
+ pe.on('error',e=>{if(e&&e.type==='unavailable-id'){tryJoin();return}if(e&&e.type==='peer-unavailable')return;NET.err='erro de conexão ('+(e&&e.type||'?')+'), tentando de novo…';renderSala();retry(tryCreate)});
  pe.on('disconnected',()=>{try{pe.reconnect()}catch(e){}})}
-function joinRoom(code){code=String(code||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4);if(code.length!==4){NET.err='O código tem 4 letras.';renderSala();return}
- if(typeof Peer==='undefined'){NET.err='Sem internet para entrar na sala.';renderSala();return}
- netReset();NET.err='Entrando na sala '+code+'…';renderSala();const myId='1'+Math.random().toString(36).slice(2,9);
+function tryJoin(){netReset();NET.err='entrando…';renderSala();const myId='1'+Math.random().toString(36).slice(2,9);
  const pe=new Peer({debug:0});NET.peer=pe;
- pe.on('open',()=>{const c=pe.connect(PREFIX+code.toLowerCase(),{metadata:{id:myId},serialization:'json',reliable:true});NET.hc=c;
-  c.on('open',()=>{NET.code=code;NET.myId=myId;NET.err='';try{history.replaceState(null,'','#'+code)}catch(e){}netSet(true)});
+ pe.on('open',()=>{const c=pe.connect(FIXED_ID,{metadata:{id:myId},serialization:'json',reliable:true});NET.hc=c;
+  joinTimer=setTimeout(()=>{if(!NET.ok)retry(tryCreate,300)},8000);
+  c.on('open',()=>{clearTimeout(joinTimer);NET.code='galera';NET.myId=myId;NET.err='';netTry=0;netSet(true)});
   c.on('data',d=>{if(d&&d.t==='a'&&Array.isArray(d.l)){const m=new Map();for(const x of d.l){if(Array.isArray(x)&&typeof x[0]==='string'&&x[1]&&typeof x[1]==='object')m.set(x[0],x[1])}NET.others=m}});
-  const bye=()=>{NET.others=new Map();NET.err='A sala foi fechada (quem criou saiu). Crie outra ou entre de novo.';netSet(false)};c.on('close',bye)});
- pe.on('error',e=>{NET.err=e&&e.type==='peer-unavailable'?'Sala '+code+' não encontrada. Confira o código.':'Erro: '+(e&&e.type||'conexão');netSet(false)})}
+  c.on('close',()=>{if(NET.peer!==pe)return;NET.others=new Map();NET.err='a sala caiu, reconectando…';netSet(false);retry(tryCreate,300+Math.random()*1500)})});
+ pe.on('error',e=>{if(NET.peer!==pe)return;if(e&&e.type==='peer-unavailable'){retry(tryCreate,300+Math.random()*700);return}NET.err='erro de conexão, tentando de novo…';renderSala();retry(tryCreate)})}
 function renderSala(){const info=$('salaInfo');if(!info)return;
- if(NET.ok){info.innerHTML=` <b style="color:#ffc145;font-size:1.3rem;letter-spacing:.15em">${NET.code}</b> ${NET.host?'(você criou)':'(conectado)'}`;$('salaBtns').style.display='none';$('salaJoin').style.display='none';$('salaShare').style.display='flex'}
- else{info.textContent=NET.err?(' · '+NET.err):': crie uma sala ou entre com o código dos amigos.';$('salaBtns').style.display='flex';$('salaJoin').style.display='flex';$('salaShare').style.display='none'}
+ if(NET.ok){const n=room.peers().length;info.innerHTML=` · <b style="color:#7CFC9A">conectado ✓</b> ${NET.host?'(seu celular é a sala, deixe o app aberto)':''}`;$('salaBtns').style.display='none'}
+ else{info.textContent=' · '+(NET.err||'conectando…');$('salaBtns').style.display=/Reconectar|treino/.test(NET.err)?'flex':'none'}
  renderLobby()}
-$('mkRoom').onclick=()=>createRoom(0);$('joinRoom').onclick=()=>joinRoom($('codeIn').value);$('codeIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom($('codeIn').value)});
-$('leaveRoom').onclick=()=>{netReset();NET.err='';try{history.replaceState(null,'',location.pathname)}catch(e){}renderSala()};
-$('shareRoom').onclick=async()=>{const url=location.origin+location.pathname+'#'+NET.code;const txt='Bora jogar na Arena Porto de Galinhas! Sala '+NET.code;
- try{if(navigator.share){await navigator.share({title:'Arena Porto de Galinhas',text:txt,url});return}}catch(e){}
- try{await navigator.clipboard.writeText(url);$('shareRoom').textContent='Link copiado ✓'}catch(e){$('shareRoom').textContent=url}setTimeout(()=>$('shareRoom').textContent='📤 Convidar',2500)};
-setTimeout(()=>{const h=(location.hash||'').replace('#','').toUpperCase();if(/^[A-Z]{4}$/.test(h)){$('codeIn').value=h;joinRoom(h)}else renderSala()},300);
+$('mkRoom').onclick=()=>autoConnect();
+setTimeout(autoConnect,300);
 if('serviceWorker' in navigator&&location.protocol==='https:'){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}
 
 function peersList(){
@@ -524,8 +519,8 @@ function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;
  if(inPlay)$('joinPlay').textContent='Entrar: '+(GAMES[world.g]||GAMES.conchas).n+' em andamento';
  renderLobby(players.length)}
 function renderLobby(n){const s=$('status');if(!s)return;
- if(!connected)s.textContent='Sem sala: dá pra treinar sozinho. Pra jogar junto, um cria a sala e os outros entram com o código.';
- else s.textContent=`Na sala ${NET.code} · ${n||0} jogando. Qualquer um pode escolher o jogo.`}
+ if(!connected)s.textContent='Conectando à sala da galera… (enquanto isso dá pra treinar sozinho)';
+ else s.textContent=`${n||0} na praia. Qualquer um pode escolher o jogo.`}
 function showEnd(w,quiet){const sc=w.sc||{};const key=JSON.stringify([sc,w.wins,w.g,w.early]);if(quiet&&key===endKey)return;endKey=key;const arr=Object.values(sc).filter(e=>e&&typeof e==='object');
  const tA=teamScore(w,'A'),tB=teamScore(w,'B');const G=GAMES[w.g]||GAMES.conchas;const unit=w.g==='futebol'?'⚽':(w.g==='boia'?'s 🛟':'🐚');
  const wn=w.wins||{A:0,B:0};$('endTour').textContent=`Torneio: Coral ${+wn.A||0} × ${+wn.B||0} Azul`;
