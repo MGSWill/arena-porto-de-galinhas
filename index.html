@@ -502,6 +502,7 @@ function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 // ---------- loop ----------
 let last=performance.now(),pushT=0;
 function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;const t=now();
+ if(innerWidth!==CW||innerHeight!==CH)resize();
  const players=peersList();
  const sorted=players.slice().sort((a,b)=>a.peer<b.peer?-1:1);
  const host=sorted[0]||null;const iHost=!!host&&host.me;
@@ -629,9 +630,9 @@ function label(x,y,r,nm,me){const m=ctx.getTransform(),d=Math.min(2,devicePixelR
 function drawLabels(){for(const[x,y,r,nm,me]of LBL){ctx.font='800 '+Math.max(11,Math.round(r*.62))+'px system-ui';ctx.textAlign='center';const ty=y-r-10;const tw=ctx.measureText(nm).width+12;ctx.fillStyle=me?'#13262b':'rgba(19,38,43,.7)';rr(x-tw/2,ty-14,tw,19,9);ctx.fill();ctx.fillStyle='#fff';ctx.fillText(nm,x,ty)}LBL=[]}
 const _ft=CanvasRenderingContext2D.prototype.fillText;
 function rotText(on){if(on){ctx.fillText=function(txt,x,y,mw){this.save();this.translate(x,y);this.rotate(Math.PI/2);mw!==undefined?_ft.call(this,txt,0,0,mw):_ft.call(this,txt,0,0);this.restore()}}else{delete ctx.fillText}}
-function resize(){const d=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*d;cv.height=CH*d;ctx.setTransform(d,0,0,d,0,0);
+function resize(){joy.id=null;firing=false;fireId=null;const d=Math.min(2,devicePixelRatio||1);CW=innerWidth;CH=innerHeight;cv.width=CW*d;cv.height=CH*d;ctx.setTransform(d,0,0,d,0,0);
  LAND=CW>CH*1.1;if(LAND){S=Math.min((CW-170)/H,(CH-62)/W);OX=-W*S/2;OY=-H*S/2}else{S=Math.min(CW/W,(CH-60)/H);OX=(CW-W*S)/2;OY=Math.max(48,(CH-H*S)/2)}dashBtn={x:CW-62,y:CH-70,r:44}}
-addEventListener('resize',resize);resize();
+addEventListener('resize',resize);addEventListener('orientationchange',()=>{setTimeout(resize,100);setTimeout(resize,400)});if(window.visualViewport)visualViewport.addEventListener('resize',resize);resize();
 const X=x=>OX+x*S,Y=y=>OY+y*S;
 const sandDots=Array.from({length:70},()=>[Math.random()*W,WATER+Math.random()*(H-WATER),Math.random()]);
 function draw(w,players,t,dt){
