@@ -1,11 +1,11 @@
 {
   "name": "Arena Porto de Galinhas",
   "short_name": "Arena PG",
-  "description": "16 jogos de praia para jogar com os amigos, cada um no seu celular.",
+  "description": "17 jogos de praia para jogar com os amigos, cada um no seu celular.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#13262b",
   "theme_color": "#13262b",
   "lang": "pt-BR",
