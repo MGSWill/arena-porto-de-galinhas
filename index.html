@@ -53,6 +53,21 @@ input:focus{outline:none;border-color:var(--sol)}
 .gc .ic{font-size:1.9rem;width:42px;text-align:center}
 .gc b{display:block;font-size:1.02rem}.gc small{color:var(--sub);font-size:.82rem;line-height:1.35;display:block;margin-top:2px}
 .gc .go{margin-left:auto;background:var(--sol);color:#13262b;font-weight:900;border-radius:999px;padding:7px 12px;font-size:.8rem}
+.gc:disabled{opacity:.45}.tabp{display:none}.tabp.on{display:block}
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:#0f1d21;border-top:1px solid rgba(255,255,255,.08);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:6}
+.tabbar button{flex:1;min-width:0;background:none;border:0;color:#8fa6ab;font-weight:800;font-size:.66rem;padding:6px 0;border-radius:12px;cursor:pointer}
+.tabbar button span{display:block;font-size:1.25rem;margin-bottom:2px}
+.card{background:var(--card);border-radius:16px;padding:14px;margin-top:10px}
+.card h3{margin:0 0 4px;font-size:1.05rem}.card .m{color:var(--sub);font-size:.84rem;line-height:1.45}
+.card .pr{color:var(--sol);font-weight:900;font-size:1rem;margin-top:6px}
+.card .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.card .acts a,.card .acts button{background:#13262b;color:#fff;text-decoration:none;border:0;border-radius:999px;padding:8px 12px;font-weight:800;font-size:.82rem;cursor:pointer}
+.card .acts .on{background:var(--sol);color:#13262b}
+.tide{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.tide span{background:#13262b;border-radius:10px;padding:6px 8px;font-size:.8rem;font-weight:700}
+.tide .lo{border:2px solid #2d7fd6}.tide .good{background:#2f9e55}.tide .ok{background:#d69a00;color:#13262b}
+.card.today{outline:3px solid var(--sol)}
+.vbar{height:8px;border-radius:8px;background:var(--sol);margin-top:6px}
+.tabbar button.on{color:#ffc145;background:rgba(255,193,69,.1)}
 .tour{text-align:center;color:var(--sub);font-weight:700;margin-top:8px}
 .grp{font-size:.75rem;color:var(--sol);font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:16px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -104,55 +119,102 @@ input:focus{outline:none;border-color:var(--sol)}
 <canvas id="cv"></canvas>
 
 <div class="ov on" id="lobby">
-  <div class="panel">
+  <div class="panel" style="padding-bottom:90px">
     <h1>Arena <span>Porto de Galinhas</span></h1>
-    <p class="sub">17 jogos · cada um no seu celular 🌴</p>
-    <div class="how" id="salaBox" style="margin-top:0">
+    <div class="how" id="salaBox" style="margin-top:6px">
       <b>Sala da galera</b> <span id="salaInfo" style="color:#b9cfd3">· conectando…</span>
       <div class="row2" id="salaBtns" style="display:none"><button class="btn ghost" id="mkRoom" style="margin-top:10px">🔄 Reconectar</button></div>
     </div>
-    <label>Seu nome</label>
-    <input id="nm" maxlength="12" placeholder="Seu apelido">
-    <label>Seu time</label>
-    <div class="teams">
-      <button class="tb A" data-t="A">🦀 Coral</button>
-      <button class="tb B" data-t="B">🐠 Azul</button>
-    </div>
-    <label>Seu boneco</label>
-    <div class="chips" id="acs"></div>
-    <div class="chips" id="accs" style="margin-top:8px"></div>
-    <button class="btn" id="join">Entrar na praia</button>
-    <div class="list" id="plist"></div>
-    <p class="status" id="status">Conectando…</p>
-    <div id="games" style="display:none">
-      <p class="grp">Em dupla (Coral × Azul)</p>
-      <button class="gc" data-g="conchas"><span class="ic">🐚</span><span><b>Guerra das Conchas</b><small>Pegue conchas (1 pt) e estrelas (3 pts). Fuja da sombra dos cocos: quem leva coco perde 1 pt. 90s.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="futebol"><span class="ic">⚽</span><span><b>Futebol de Areia</b><small>Encoste na bola pra conduzir e use o Empurrão pra chutar forte. Coral ataca pra cima, Azul pra baixo. 2 min.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="boia"><span class="ic">🛟</span><span><b>Rei da Boia</b><small>Fique dentro da boia que anda pela praia. Seu time pontua enquanto só ele estiver lá dentro. Empurre os rivais pra fora! 75s.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="tiro"><span class="ic">🔫</span><span><b>Guerra d'Água 2x2</b><small>Pistola d'água, Coral contra Azul. Sem fogo amigo. Cada molhada no rival vale 1 ponto para o time. Use os guarda-sóis como escudo. 2 min.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="volei"><span class="ic">🏐</span><span><b>Vôlei de Praia</b><small>Rede no meio. Encoste na bola pra levantar e use o Empurrão pra cortar. Se a bola cair no seu lado, ponto do rival. 2 min.</small></span><span class="go">Jogar</span></button>
-      <p class="grp">Todos contra todos</p>
-      <button class="gc" data-g="ffa"><span class="ic">💦</span><span><b>Cada Um Por Si</b><small>Pistola d'água, todos contra todos. Quem molhar mais gente vence. 2 min.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="tubarao"><span class="ic">🦈</span><span><b>Fuja do Tubarão</b><small>Um é sorteado tubarão. Quem for pego vira tubarão também. Cada segundo vivo vale ponto. 90s.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="balao"><span class="ic">🎈</span><span><b>Estoura Balão</b><small>Cada um tem 3 balões. Dê Empurrão nos outros pra estourar os deles. O último com balão vence. 2 min.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="cobra"><span class="ic">🐍</span><span><b>Cobrinha</b><small>Estilo slither.io: coma os pontinhos pra crescer. Se sua cabeça bater no corpo de outra cobra, você morre e vira comida. Segure o botão pra turbo. 3 min.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="buggy"><span class="ic">🏁</span><span><b>Corrida de Buggy</b><small>4 voltas na pista de areia. Fora da pista o buggy atola. O Empurrão vira turbo!</small></span><span class="go">Jogar</span></button>
-      <p class="grp">Calmos (bons pra mesa)</p>
-      <button class="gc" data-g="quiz"><span class="ic">❓</span><span><b>Quiz Relâmpago</b><small>10 perguntas na tela de todos. Acertar rápido vale mais pontos.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="desenho"><span class="ic">🎨</span><span><b>Desenha e Adivinha</b><small>Cada um desenha uma vez; os outros veem ao vivo e tentam adivinhar digitando.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="impostor"><span class="ic">🤫</span><span><b>Quem é o Impostor?</b><small>Todos recebem a mesma palavra, menos o impostor. Cada um dá uma dica e depois todos votam em quem está blefando.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="stop"><span class="ic">✋</span><span><b>Stop! (Adedanha)</b><small>Sai uma letra, cada um preenche nome, animal, cidade… Quem terminar grita STOP. Resposta única vale 10 pontos.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="voto"><span class="ic">👉</span><span><b>Quem É Mais Provável?</b><small>Aparece uma situação e todos votam em alguém do grupo. Quem votar igual à maioria pontua.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="roleta"><span class="ic">🔫</span><span><b>Roleta Russa d'Água</b><small>Pistola d'água com 6 câmaras e só uma carregada. Cada um na sua vez puxa o gatilho. Quem se molhar sai; o último seco vence.</small></span><span class="go">Jogar</span></button>
-      <button class="gc" data-g="memoria"><span class="ic">🃏</span><span><b>Jogo da Memória</b><small>Cada um na sua vez vira 2 cartas. Achou o par, pontua e joga de novo.</small></span><span class="go">Jogar</span></button>
-    </div>
-    <div class="row2"><button class="btn ghost" id="rankBtn">🏆 Ranking da viagem</button><button class="btn ghost" id="sndBtn">🔊 Som</button></div>
-    <button class="btn" id="joinPlay" style="display:none">Entrar na partida em andamento</button>
+
+    <section class="tabp" data-tab="jogos">
+      <div class="how" id="needProfile" style="display:none;border:2px solid var(--sol)">👤 Primeiro crie seu perfil (nome, time e boneco) pra poder jogar.<button class="btn" id="goPerfil" style="margin-top:10px">Criar meu perfil</button></div>
+      <div class="list" id="plist"></div>
+      <p class="status" id="status">Conectando…</p>
+      <button class="btn" id="joinPlay" style="display:none">Entrar na partida em andamento</button>
+    <div id="games">
+        <p class="grp">Em dupla (Coral × Azul)</p>
+        <button class="gc" data-g="conchas"><span class="ic">🐚</span><span><b>Guerra das Conchas</b><small>Pegue conchas (1 pt) e estrelas (3 pts). Fuja da sombra dos cocos: quem leva coco perde 1 pt. 90s.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="futebol"><span class="ic">⚽</span><span><b>Futebol de Areia</b><small>Encoste na bola pra conduzir e use o Empurrão pra chutar forte. Coral ataca pra cima, Azul pra baixo. 2 min.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="boia"><span class="ic">🛟</span><span><b>Rei da Boia</b><small>Fique dentro da boia que anda pela praia. Seu time pontua enquanto só ele estiver lá dentro. Empurre os rivais pra fora! 75s.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="tiro"><span class="ic">🔫</span><span><b>Guerra d'Água 2x2</b><small>Pistola d'água, Coral contra Azul. Sem fogo amigo. Cada molhada no rival vale 1 ponto para o time. Use os guarda-sóis como escudo. 2 min.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="volei"><span class="ic">🏐</span><span><b>Vôlei de Praia</b><small>Rede no meio. Encoste na bola pra levantar e use o Empurrão pra cortar. Se a bola cair no seu lado, ponto do rival. 2 min.</small></span><span class="go">Jogar</span></button>
+        <p class="grp">Todos contra todos</p>
+        <button class="gc" data-g="ffa"><span class="ic">💦</span><span><b>Cada Um Por Si</b><small>Pistola d'água, todos contra todos. Quem molhar mais gente vence. 2 min.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="tubarao"><span class="ic">🦈</span><span><b>Fuja do Tubarão</b><small>Um é sorteado tubarão. Quem for pego vira tubarão também. Cada segundo vivo vale ponto. 90s.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="balao"><span class="ic">🎈</span><span><b>Estoura Balão</b><small>Cada um tem 3 balões. Dê Empurrão nos outros pra estourar os deles. O último com balão vence. 2 min.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="cobra"><span class="ic">🐍</span><span><b>Cobrinha</b><small>Estilo slither.io: coma os pontinhos pra crescer. Se sua cabeça bater no corpo de outra cobra, você morre e vira comida. Segure o botão pra turbo. 3 min.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="buggy"><span class="ic">🏁</span><span><b>Corrida de Buggy</b><small>4 voltas na pista de areia. Fora da pista o buggy atola. O Empurrão vira turbo!</small></span><span class="go">Jogar</span></button>
+        <p class="grp">Calmos (bons pra mesa)</p>
+        <button class="gc" data-g="quiz"><span class="ic">❓</span><span><b>Quiz Relâmpago</b><small>10 perguntas na tela de todos. Acertar rápido vale mais pontos.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="desenho"><span class="ic">🎨</span><span><b>Desenha e Adivinha</b><small>Cada um desenha uma vez; os outros veem ao vivo e tentam adivinhar digitando.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="impostor"><span class="ic">🤫</span><span><b>Quem é o Impostor?</b><small>Todos recebem a mesma palavra, menos o impostor. Cada um dá uma dica e depois todos votam em quem está blefando.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="stop"><span class="ic">✋</span><span><b>Stop! (Adedanha)</b><small>Sai uma letra, cada um preenche nome, animal, cidade… Quem terminar grita STOP. Resposta única vale 10 pontos.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="voto"><span class="ic">👉</span><span><b>Quem É Mais Provável?</b><small>Aparece uma situação e todos votam em alguém do grupo. Quem votar igual à maioria pontua.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="roleta"><span class="ic">🔫</span><span><b>Roleta Russa d'Água</b><small>Pistola d'água com 6 câmaras e só uma carregada. Cada um na sua vez puxa o gatilho. Quem se molhar sai; o último seco vence.</small></span><span class="go">Jogar</span></button>
+        <button class="gc" data-g="memoria"><span class="ic">🃏</span><span><b>Jogo da Memória</b><small>Cada um na sua vez vira 2 cartas. Achou o par, pontua e joga de novo.</small></span><span class="go">Jogar</span></button>
+      </div>
     <div class="how">
-      <b>Controles:</b> arraste o dedo em qualquer lugar da tela pra andar. O botão <b>💥 Empurrão</b> dá uma arrancada que derruba quem estiver no caminho (e chuta a bola no futebol).<br>Qualquer um pode escolher o jogo: começa pra todo mundo ao mesmo tempo.
-    </div>
+        <b>Controles:</b> arraste o dedo em qualquer lugar da tela pra andar. O botão <b>💥 Empurrão</b> dá uma arrancada que derruba quem estiver no caminho (e chuta a bola no futebol).<br>Qualquer um pode escolher o jogo: começa pra todo mundo ao mesmo tempo.
+      </div>
+    </section>
+
+    <section class="tabp" data-tab="mares">
+      <p class="grp">Tábua de marés · Porto de Galinhas</p>
+      <div id="mareHoje"></div>
+      <div class="how" style="font-size:.84rem"><b>Regra das piscinas naturais:</b> o passeio de jangada só vale com <b>maré baixa de 0.5 m ou menos</b>, de dia. De 0.0 a 0.3 é perfeito. A partir de 0.6, não vale a pena. Vá no horário da maré baixa ou até 1 hora antes.</div>
+      <div id="mareList"></div>
+      <p class="status" style="text-align:left">Fonte: tablademareas.com (previsão para Porto de Galinhas, horário de Brasília). Os hotéis e o guichê dos jangadeiros também têm a tábua do dia.</p>
+    </section>
+
+    <section class="tabp" data-tab="comer">
+      <p class="grp">Onde comer hoje? Votem!</p>
+      <div class="how" id="voteBox" style="font-size:.88rem">Toque em <b>👍 Quero ir</b> no lugar que você prefere. Os votos de todos aparecem aqui em tempo real.</div>
+      <div id="comerList"></div>
+      <p class="status" style="text-align:left">Preço médio por pessoa e horários segundo o guia grupodicas.com (2026). Podem ter mudado: confira antes de ir. Alta temporada: chegue cedo ou reserve.</p>
+    </section>
+
+    <section class="tabp" data-tab="passeios">
+      <p class="grp">Passeios · preços de referência</p>
+      <div class="how" style="font-size:.84rem">Valores pesquisados em guias e sites de agências (2025–2026). <b>Variam com a temporada e sempre dá pra negociar</b>, principalmente buggy e quadriciclo. Pergunte se o preço é por pessoa ou por veículo.</div>
+      <div id="passList"></div>
+      <p class="grp">Contatos e onde contratar</p>
+      <div id="contList"></div>
+      <p class="status" style="text-align:left">Contatos de empresas tirados dos sites delas e de guias de viagem. Não temos parceria com nenhuma: confira avaliações antes de fechar.</p>
+    </section>
+
+    <section class="tabp" data-tab="perfil">
+      <label>Seu nome</label>
+      <input id="nm" maxlength="12" placeholder="Seu apelido">
+      <label>Seu time</label>
+      <div class="teams">
+        <button class="tb A" data-t="A">🦀 Coral</button>
+        <button class="tb B" data-t="B">🐠 Azul</button>
+      </div>
+      <label>Seu boneco</label>
+      <div class="chips" id="acs"></div>
+      <div class="chips" id="accs" style="margin-top:8px"></div>
+      <button class="btn" id="join">Salvar e ir pros jogos</button>
+      <label>Som</label>
+      <button class="btn ghost" id="sndBtn" style="margin-top:0">🔊 Som</button>
+    </section>
+
+    <section class="tabp" data-tab="ranking">
+      <p class="sub" style="margin-top:12px">Vitórias de todas as partidas vistas neste celular. Não zera ao fechar.</p>
+      <div class="score" id="rkTeams"></div>
+      <div class="list" id="rkList"></div>
+      <button class="btn ghost" id="rkReset">Zerar ranking</button>
+    </section>
   </div>
+  <nav class="tabbar" id="tabbar">
+    <button data-t="jogos"><span>🎮</span>Jogos</button>
+    <button data-t="mares"><span>🌊</span>Marés</button>
+    <button data-t="comer"><span>🍽️</span>Comer</button>
+    <button data-t="passeios"><span>🚤</span>Passeios</button>
+    <button data-t="ranking"><span>🏆</span>Ranking</button>
+    <button data-t="perfil"><span>👤</span>Perfil</button>
+  </nav>
 </div>
+<span id="rankBtn" style="display:none"></span><span id="rkClose" style="display:none"></span>
 
 <div class="ov" id="end">
   <div class="panel">
@@ -167,16 +229,7 @@ input:focus{outline:none;border-color:var(--sol)}
   </div>
 </div>
 
-<div class="ov" id="rank">
-  <div class="panel">
-    <h1>Ranking da <span>viagem</span></h1>
-    <p class="sub">Soma as vitórias de todas as partidas vistas neste celular. Não zera ao fechar.</p>
-    <div class="score" id="rkTeams"></div>
-    <div class="list" id="rkList"></div>
-    <button class="btn" id="rkClose">Voltar</button>
-    <button class="btn ghost" id="rkReset">Zerar ranking</button>
-  </div>
-</div>
+<div id="rank" style="display:none"></div>
 <div id="calm">
   <div class="cbar"><b id="cTitle"></b><button class="vbtn" id="cVote">🏳️ Encerrar</button><span class="t" id="cTime"></span></div>
   <div id="quizUI">
@@ -252,6 +305,70 @@ let fx=[];let lastSeenW=null,endKey='';
 
 try{const s=JSON.parse(localStorage.getItem('gdc')||'{}');if(s.n)$('nm').value=s.n;if(s.t)pick(s.t);if(s.ac>=0&&s.ac<6)myAc=s.ac;if(s.acc>=0&&s.acc<6)myAcc=s.acc;if(s.snd===false)soundOn=false}catch(e){}
 renderAc();
+setTimeout(()=>{if($('nm').value.trim()&&myTeam){$('join').onclick()}else setTab('perfil')},50);
+let curTab='perfil',myRv='';
+const MARES={'2026-11-22':[['01:39',2.1],['08:01',0.3],['14:03',2.1],['20:16',0.2]],'2026-11-23':[['02:28',2.3],['08:44',0.2],['14:47',2.2],['21:03',0.1]],'2026-11-24':[['03:13',2.3],['09:25',0.2],['15:33',2.3],['21:51',0.1]],'2026-11-25':[['04:02',2.3],['10:12',0.2],['16:16',2.4],['22:37',0.1]],'2026-11-26':[['04:53',2.3],['11:00',0.3],['17:06',2.3],['23:32',0.1]],'2026-11-27':[['05:44',2.2],['11:48',0.4],['17:59',2.3]],'2026-11-28':[['00:22',0.2],['06:40',2.1],['12:47',0.5],['18:55',2.2]],'2026-11-29':[['01:30',0.3],['07:39',1.9],['13:44',0.6],['19:58',2.0]],'2026-11-30':[['02:34',0.5],['08:46',1.8],['14:59',0.7],['21:05',2.0]]};
+const DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function bestLow(arr){const day=arr.filter(t=>t[1]<1&&+t[0].slice(0,2)>=6&&+t[0].slice(0,2)<=17);return day.sort((a,b)=>a[1]-b[1])[0]||null}
+function verdict(lo){if(!lo)return['Sem maré baixa de dia','bad'];if(lo[1]<=0.3)return['Perfeito pras piscinas ✅','good'];if(lo[1]<=0.5)return['Dá pra ir 👍','ok'];return['Não vale a pena ❌','bad']}
+function renderMares(){const today=ymd(new Date());const keys=Object.keys(MARES);
+ const lo=MARES[today]?bestLow(MARES[today]):null;const v=verdict(lo);
+ $('mareHoje').innerHTML=MARES[today]?`<div class="card today"><h3>Hoje</h3><div class="m">Melhor maré baixa de dia:</div><div class="pr" style="font-size:1.6rem">${lo?lo[0]+' · '+lo[1].toFixed(1)+' m':'—'}</div><div class="m"><b>${v[0]}</b></div></div>`:`<div class="card"><div class="m">A tábua salva vai de 22 a 30 de novembro de 2026. Pra outras datas, consulte no hotel ou no guichê dos jangadeiros.</div></div>`;
+ $('mareList').innerHTML=keys.map(k=>{const d=new Date(k+'T12:00:00');const lo2=bestLow(MARES[k]);const v2=verdict(lo2);
+  return`<div class="card${k===today?' today':''}"><h3>${DIAS[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}${k===today?' · hoje':''}</h3><div class="m">${lo2?`Piscinas: <b>${lo2[0]}</b> (${lo2[1].toFixed(1)} m) · ${v2[0]}`:v2[0]}</div>
+  <div class="tide">${MARES[k].map(t=>{const low=t[1]<1;const cls=low?(lo2&&t===lo2?(t[1]<=0.3?'lo good':(t[1]<=0.5?'lo ok':'lo')):'lo'):'';return`<span class="${cls}">${low?'⬇️':'⬆️'} ${t[0]} · ${t[1].toFixed(1)}m</span>`}).join('')}</div></div>`}).join('')}
+const COMER=[
+ ['beiju','Beijupirá','Frutos do mar com frutas e ingredientes nordestinos. O clássico de Porto, desde 1991.','R. Beijupirá, 90','Todo dia, 12h–23h30','R$ 200–250','Na alta temporada forma fila depois das 20h: chegue cedo ou reserve.'],
+ ['telha','Peixe na Telha','Frutos do mar servidos na telha de barro, de frente pro mar.','R. das Piscinas Naturais, 103','Todo dia, 10h–16h e 18h30–22h','R$ 150–200','No almoço, vá antes de 12h30 ou depois de 14h.'],
+ ['barcax','Barcaxeira','Escondidinho de macaxeira gratinado: camarão, carne de sol ou frutos do mar.','R. Esperança, 458','Todo dia, 12h–23h','R$ 80–120','Chegue por volta de 11h30 pra fugir da fila.'],
+ ['farofa','Farofa Fina','Comida regional pernambucana.','R. dos Navegantes, 26','Todo dia, 11h30–22h','R$ 80–120','Guarde espaço pra cartola de chocolate.'],
+ ['doming','Domingos','Frutos do mar, carnes e vinhos, num ambiente mais refinado.','R. Beijupirá, 128','Seg–Qui 14h–23h · Sex e Dom 12h–0h · Sáb 12h–23h','R$ 160–230','O prato famoso é o camarão com abacaxi.'],
+ ['barraca','Barraca Comida Brasileira','Comida brasileira clássica e criativa.','R. Esperança, 430','Todo dia, 12h–23h','R$ 100–150','Prove o bolinho de queijo coalho defumado.'],
+ ['estrela','Estrela da Manhã','Comida caseira, executivo no almoço e petiscos.','R. Esperança, 368','Todo dia, 11h30–22h30','R$ 60–100','A opção mais em conta, ótima no almoço.'],
+ ['mung','Munganga Bistrô','Frutos do mar com vista pro mar; às vezes música ao vivo à noite.','Av. Beira Mar, 32','Todo dia, 9h–16h e 18h–22h','R$ 100–140','Bom pra noite depois da praia.'],
+ ['mamma','Mamma Mia','Pizza no forno a lenha, pra variar dos frutos do mar.','R. das Piscinas Naturais, 200','Todo dia, 18h–23h','R$ 80–100','Ambiente tranquilo.'],
+ ['maraca','Maracajú','Cardápio amplo: frutos do mar, carnes, massas e sobremesas.','R. Ipê Roxo, s/n (Lot. Porto do Sol, fora do centro)','Todo dia, 7h–23h','R$ 150–200','Peça o petit gateau.']];
+let comerKey='';
+function voteCounts(){const c={};const ps=room?room.peers():[];for(const p of ps){const pr=p.sameTab?{e:myExtra(),nm:myName}:p.presence;const e=pr&&pr.e;const v=e&&typeof e.rv==='string'?e.rv:'';if(v&&(p.sameTab?joined:pr.nm)){(c[v]=c[v]||[]).push(p.sameTab?myName:String(pr.nm).slice(0,12))}}return c}
+function renderComer(force){const c=voteCounts();const key=JSON.stringify([c,myRv]);if(!force&&key===comerKey)return;comerKey=key;
+ const total=Object.values(c).reduce((a,v)=>a+v.length,0);const top=Object.entries(c).sort((a,b)=>b[1].length-a[1].length)[0];
+ $('voteBox').innerHTML=total?`🏆 <b>Mais votado agora:</b> ${esc(COMER.find(r=>r[0]===top[0])?COMER.find(r=>r[0]===top[0])[1]:'?')} (${top[1].length} voto${top[1].length>1?'s':''})`:'Toque em <b>👍 Quero ir</b> no lugar que você prefere. Os votos de todos aparecem aqui em tempo real.';
+ const list=COMER.slice().sort((a,b)=>((c[b[0]]||[]).length-(c[a[0]]||[]).length));
+ $('comerList').innerHTML=list.map(r=>{const v=c[r[0]]||[];const q=encodeURIComponent(r[1]+' '+r[3]+' Porto de Galinhas');
+  return`<div class="card"><h3>${esc(r[1])}</h3><div class="m">${esc(r[2])}<br>📍 ${esc(r[3])}<br>🕒 ${esc(r[4])}<br>💡 ${esc(r[6])}</div><div class="pr">${esc(r[5])} por pessoa</div>
+  ${v.length?`<div class="vbar" style="width:${Math.max(12,v.length/Math.max(1,total)*100)}%"></div><div class="m">👍 ${v.map(esc).join(', ')}</div>`:''}
+  <div class="acts"><button class="${myRv===r[0]?'on':''}" data-rv="${r[0]}">${myRv===r[0]?'✓ Meu voto':'👍 Quero ir'}</button><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">🗺️ Mapa</a></div></div>`}).join('');
+ $('comerList').querySelectorAll('[data-rv]').forEach(b=>b.onclick=()=>{if(!joined){setTab('perfil');return}myRv=myRv===b.dataset.rv?'':b.dataset.rv;snd('tick');renderComer(true)})}
+const PASS=[
+ ['🛶','Jangada · piscinas naturais','~R$ 60 por pessoa (a partir de 7 anos)','Cerca de 1h. Crianças de 4 a 6 anos pagam metade. No cartão, uns R$ 3 a mais. Só com maré baixa (veja a aba Marés). Compre no guichê oficial da Associação dos Jangadeiros, no portal de acesso à praia da Vila: preço tabelado e ficha numerada.'],
+ ['🐴','Jangada · cavalos-marinhos (Pontal de Maracaípe)','~R$ 60 adulto · ~R$ 30 criança','Cerca de 1h pelo mangue do rio Maracaípe, com os jangadeiros da Associação do Pontal de Maracaípe.'],
+ ['🏎️','Buggy ponta a ponta','R$ 400–550 por buggy (até 4 pessoas)','Cerca de 4h, de Muro Alto ao Pontal de Maracaípe. Versão de 2h por ~R$ 350. Como o preço é por buggy, sai mais barato dividido entre os 4.'],
+ ['🏍️','Quadriciclo (trilha)','R$ 300–400 por quadriciclo (até 2 pessoas)','Cerca de 3h por trilhas, coqueirais e mirantes entre Porto, Maracaípe e Serrambi. Roteiros curtos de ~50 min por ~R$ 200. Em Muro Alto, 30–40 min por ~R$ 150.'],
+ ['🚤','Jet ski','20 min ~R$ 200–230 · 30 min ~R$ 300–350 · 1h ~R$ 600–650','Por jet ski, com até 2 pessoas. Saídas na praia do centro ou em Serrambi, de dia (por volta das 9h às 15h).'],
+ ['🪂','Paramotor','~R$ 350–400 por pessoa','Voo de uns 12 minutos com piloto, com vista do litoral.'],
+ ['🤿','Mergulho com cilindro','a partir de ~R$ 150 por pessoa','Mergulho de batismo com instrutor, perto das piscinas naturais.'],
+ ['🛶','Caiaque ou stand up (Muro Alto)','~R$ 40','Aluguel na própria praia de Muro Alto, de águas calmas.'],
+ ['⛵','Bate-volta Praia dos Carneiros','R$ 150–230 por pessoa','Dia inteiro, com transporte e catamarã ou estrutura de praia (depende do pacote).'],
+ ['🏝️','Bate-volta Maragogi','R$ 190–250 por pessoa','Dia inteiro. O catamarã ou a lancha até as galés às vezes é cobrado à parte.'],
+ ['🏛️','Recife e Olinda','~R$ 120–148 por pessoa','City tour de um dia, com guia e transporte. Almoço à parte.'],
+ ['🚕','Táxi (preço combinado)','Centro↔Muro Alto ~R$ 45 · Centro↔Pontal do Cupe ~R$ 40','Também dá pra combinar o dia inteiro em Carneiros por ~R$ 250. Compare com o Uber.']];
+const CONT=[
+ ['Associação dos Jangadeiros (piscinas naturais)','Guichê oficial no portal da praia da Vila, na esquina da Rua das Piscinas Naturais com a Rua Esperança. Compre só lá, nunca de ambulante.',[]],
+ ['Ponto dos bugueiros','Na Rua Caraúna, esquina com a Rua das Piscinas Naturais. Pra contratar direto com o bugueiro, prefira os credenciados. O telefone da Associação dos Bugueiros é de um guia de 2018 e pode ter mudado.',[['📞 (81) 3552-1930','tel:+558135521930']]],
+ ['4Trips Turismo (buggy privativo)','Agência de Ipojuca que opera o tour de buggy vendido na Civitatis.',[['💬 WhatsApp','https://wa.me/5581983866094'],['📞 (81) 98386-6094','tel:+5581983866094']]],
+ ['Tour Galinhas','Buggy, jangada, quadriciclo, jet ski, paramotor.',[['🌐 Site','https://tourgalinhas.com.br/']]],
+ ['Caribe Mar Azul','Jet ski saindo da praia do centro.',[['🌐 Site','https://caribemarazul.com/jet-ski-porto-de-galinhas']]],
+ ['RL Trips','Jet ski e quadriciclo.',[['🌐 Site','https://rltrips.com/Jet-ski-Porto-de-Galinhas']]],
+ ['AlfaMar Turismo','Quadriciclo e bate-voltas.',[['🌐 Site','https://alfamartour.com.br/passeios/quadriciclo-porto-de-galinhas/']]],
+ ['Vivo Porto de Galinhas','Aluguel de quadriciclo (rota dos coqueirais e trilha do Outeiro).',[['🌐 Site','https://vivoportodegalinhas.com/experiencias/passeio-e-aluguel-de-quadriciclo/']]],
+ ['Porto Transfers','Buggy de 4h, 6h e 8h.',[['🌐 Site','https://portotransfers.com.br/passeios/passeio-de-buggy']]],
+ ['Seu Passeio Porto de Galinhas','Quadriciclo, Carneiros, Maragogi, Calhetas, Recife e Olinda.',[['🌐 Site','https://seupasseioportodegalinhas.com.br/']]],
+ ['MarIA · assistente oficial do destino','Assistente do Porto de Galinhas Convention & Visitors Bureau, que responde 24h no WhatsApp. Ela indica passeios, restaurantes e serviços cadastrados.',[['📷 @portodegalinhas','https://www.instagram.com/portodegalinhas/']]]];
+function renderPasseios(){$('passList').innerHTML=PASS.map(p=>`<div class="card"><h3>${p[0]} ${esc(p[1])}</h3><div class="pr">${esc(p[2])}</div><div class="m" style="margin-top:4px">${esc(p[3])}</div></div>`).join('');
+ $('contList').innerHTML=CONT.map(c=>`<div class="card"><h3>${esc(c[0])}</h3><div class="m">${esc(c[1])}</div>${c[2].length?`<div class="acts">${c[2].map(a=>`<a href="${a[1]}" target="_blank" rel="noopener">${esc(a[0])}</a>`).join('')}</div>`:''}</div>`).join('')}
+function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===t));if(t==='ranking')showRank();if(t==='mares')renderMares();if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
+document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 function renderAc(){$('acs').innerHTML=ACS.map((a,i)=>`<button class="chip${i===myAc?' on':''}" data-i="${i}">${a}</button>`).join('');
  $('acs').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{myAc=+b.dataset.i;saveMe();renderAc()});
  $('accs').innerHTML=myAc?ACC.map((c,i)=>`<button class="sw${i===myAcc?' on':''}" data-i="${i}" style="background:${c}" aria-label="cor ${i+1}"></button>`).join(''):'';
@@ -261,11 +378,12 @@ function pick(t){myTeam=t;document.querySelectorAll('.tb').forEach(b=>b.classLis
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>pick(b.dataset.t));
 $('join').onclick=()=>{const n=$('nm').value.trim();if(!n){$('nm').focus();return}if(!myTeam){pick(Math.random()<.5?'A':'B')}
  myName=n.slice(0,12);joined=true;saveMe();
- spawnMe();$('join').textContent='Atualizar nome/time';renderLobby()};
+ spawnMe();renderLobby();setTab('jogos')};
+$('goPerfil').onclick=()=>setTab('perfil');
 document.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{gp=b.dataset.g;goCount++});
 $('joinPlay').onclick=()=>{$('lobby').classList.remove('on');showLobbyLocal=false};
 $('again').onclick=()=>{gp=curG;goCount++};
-$('toLobby').onclick=()=>{$('end').classList.remove('on');$('lobby').classList.add('on');showLobbyLocal=true};
+$('toLobby').onclick=()=>{$('end').classList.remove('on');$('lobby').classList.add('on');showLobbyLocal=true;setTab('perfil')};
 let showLobbyLocal=false;
 
 function freeSpot(y0,y1){for(let k=0;k<30;k++){const x=.08+Math.random()*.84,y=y0+Math.random()*(y1-y0);if(!OB.some(o=>Math.hypot(o[0]-x,o[1]-y)<o[2]+R*2))return{x,y}}return{x:.5,y:(y0+y1)/2}}
@@ -324,7 +442,7 @@ function peersList(){
  if(!mineSeen&&joined)out.push(mePeer());
  return out}
 function mePeer(){return{peer:myPeer||'me',me:true,nm:myName,tm:myTeam,x:pos.x,y:pos.y,d:dir,st:now()<stunUntil,ds:now()<dashUntil,got,hit:hitCount,go:goCount,ve:myVote,gp,fs,hb,dd:now()<deadUntil,e:myExtra(),w:null}}
-function myExtra(){const e={ac:myAc,acc:myAcc};if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;if(curG==='roleta'&&myRp)e.rp=myRp;if(curG==='cobra'){e.sb=snDead?[]:encB();e.fg=sfg;e.dc=sdc;e.ln=Math.floor(sln);if(skb)e.kb=skb}return e}
+function myExtra(){const e={ac:myAc,acc:myAcc};if(myRv)e.rv=myRv;if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;if(curG==='roleta'&&myRp)e.rp=myRp;if(curG==='cobra'){e.sb=snDead?[]:encB();e.fg=sfg;e.dc=sdc;e.ln=Math.floor(sln);if(skb)e.kb=skb}return e}
 let sPath=[],sln=10,sang=-Math.PI/2,sfg=[],sdc=0,skb='',snDead=false,sDeadUntil=0,sBoostT=0,sEaten=new Set();
 function encB(){const b=snBody();const o=[];for(const q of b){o.push(Math.round(q[0]*1000),Math.round(q[1]*1000))}return o}
 function snBody(){const n=Math.min(150,Math.floor(sln));const out=[];if(!sPath.length)return out;let need=0,acc=0;out.push(sPath[0]);for(let i=1;i<sPath.length&&out.length<n;i++){const a=sPath[i-1],b=sPath[i];acc+=Math.hypot(a[0]-b[0],a[1]-b[1]);if(acc>=SEG){out.push(b);acc=0}}return out}
@@ -601,9 +719,9 @@ function rp(p){if(p.me)return pos;let r=rpos[p.peer];if(!r){r=rpos[p.peer]={x:p.
 
 // ---------- lobby / end ----------
 let lobT=0;
-function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;
+function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();
  $('plist').innerHTML=players.length?players.map(p=>`<div class="pl"><span class="dot ${p.tm}"></span>${esc(p.nm)} ${p.me?'<span class="me">você</span>':''}</div>`).join(''):'<div class="pl" style="color:#b9cfd3">Ninguém na praia ainda</div>';
- const inPlay=world.ph==='play';$('games').style.display=joined&&!inPlay?'block':'none';$('joinPlay').style.display=joined&&inPlay?'block':'none';
+ const inPlay=world.ph==='play';$('games').style.display=!inPlay?'block':'none';$('needProfile').style.display=joined?'none':'block';document.querySelectorAll('.gc').forEach(b=>b.disabled=!joined);$('joinPlay').style.display=joined&&inPlay?'block':'none';
  if(inPlay)$('joinPlay').textContent='Entrar: '+(GAMES[world.g]||GAMES.conchas).n+' em andamento';
  renderLobby(players.length)}
 function renderLobby(n){const s=$('status');if(!s)return;
@@ -907,7 +1025,7 @@ function recordRank(w){const rk=loadRank();rk.p=rk.p||{};rk.t=rk.t||{A:0,B:0};rk
  try{localStorage.setItem('gdc_rank',JSON.stringify(rk))}catch(e){}}
 function showRank(){const rk=loadRank();const t=rk.t||{A:0,B:0};$('rkTeams').innerHTML=`<div class="sc A"><div class="n">🦀 Coral</div><div class="p">${+t.A||0}</div></div><div class="sc B"><div class="n">🐠 Azul</div><div class="p">${+t.B||0}</div></div>`;
  const ps=Object.entries(rk.p||{}).sort((a,b)=>b[1].w-a[1].w||b[1].j-a[1].j);$('rkList').innerHTML=ps.length?ps.map(([n,v],i)=>`<div class="pl">${i===0&&v.w?'👑 ':''}${esc(n)}<span style="margin-left:auto">${v.w} vitórias · ${v.j} jogos</span></div>`).join(''):'<div class="pl" style="color:#b9cfd3">Nenhuma partida ainda</div>';
- $('rank').classList.add('on')}
+}
 $('rankBtn').onclick=showRank;$('rkClose').onclick=()=>$('rank').classList.remove('on');
 let rkArm=false;$('rkReset').onclick=()=>{if(!rkArm){rkArm=true;$('rkReset').textContent='Toque de novo pra confirmar';setTimeout(()=>{rkArm=false;$('rkReset').textContent='Zerar ranking'},2500);return}try{localStorage.removeItem('gdc_rank')}catch(e){}showRank()};
 
