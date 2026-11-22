@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Arena Porto de Galinhas</title>
+<title>Porto de Galinhas · Viagem da galera</title>
 <meta name="theme-color" content="#13262b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Arena PG">
+<meta name="apple-mobile-web-app-title" content="Porto PG">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1/dist/peerjs.min.js"></script>
 <style>
 :root{--A:#ff6f59;--B:#13a3ad;--sol:#ffc145;--bg:#13262b;--card:#1d363d;--sub:#b9cfd3}
@@ -113,24 +114,99 @@ input:focus{outline:none;border-color:var(--sol)}
  #vOpts,#iVote{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vo{margin-top:0}
  #calm{padding:10px 18px 20px}
 }.gin input{flex:1}.gin button{border:0;border-radius:14px;background:var(--sol);font-weight:900;padding:0 16px}
+:root{--card:#1b3239;--bg:#0f2226}
+html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+#lobby{background:var(--bg);padding:0;display:none;align-items:stretch;flex-direction:column}#lobby.on{display:block}
+.hero{position:relative;background:linear-gradient(170deg,#3fd0d8 0%,#18a2ad 38%,#0e7c86 70%,#0a5d65 100%);padding:calc(18px + env(safe-area-inset-top)) 18px 46px;color:#fff;overflow:hidden}
+.hero .sun{position:absolute;right:-38px;top:-40px;width:150px;opacity:.55;animation:spin 40s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero .htop{display:flex;align-items:flex-start;justify-content:space-between;position:relative;max-width:520px;margin:0 auto}
+.hero h1{font-size:2.05rem;line-height:1.05;margin:2px 0 0;font-weight:900;letter-spacing:-.02em;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.15)}
+.hero h1 span{color:#fff}
+.hero .kick{margin:0;font-weight:800;opacity:.9;font-size:.95rem}
+.avatar{width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(255,255,255,.2);color:#fff;font-size:1.3rem;font-weight:900;flex:none;position:relative;z-index:2;cursor:pointer;backdrop-filter:blur(4px)}
+.conn{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:rgba(0,0,0,.18);border-radius:999px;padding:7px 12px;font-size:.84rem;font-weight:700;position:relative;max-width:520px}
+.hero .conn{margin-left:max(0px,calc((100% - 520px)/2))}
+.dotc{width:9px;height:9px;border-radius:50%;background:#ffd166;box-shadow:0 0 0 3px rgba(255,209,102,.25);flex:none}.dotc.ok{background:#5ef08d;box-shadow:0 0 0 3px rgba(94,240,141,.25)}
+.wave{position:absolute;left:0;bottom:-1px;width:100%;height:36px}
+.panel.body{max-width:520px;margin:0 auto;padding:4px 16px 120px}
+.sechead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sechead h2{font-size:1.55rem;font-weight:900;margin:12px 0 6px;letter-spacing:-.01em}.sechead h3{font-size:1.02rem;margin:0;color:#dbe8ea}
+.pill{background:var(--card);color:#fff;border:0;border-radius:999px;padding:8px 13px;font-weight:800;font-size:.85rem;cursor:pointer;font-family:inherit}
+.filt{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
+.filt button{flex:none;border:0;border-radius:999px;padding:9px 14px;background:var(--card);color:#cfe0e3;font-weight:800;font-family:inherit;cursor:pointer}
+.filt button.on{background:var(--sol);color:#13262b}
+#games{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}
+#games[style*="none"]{display:none!important}
+#games .grp{grid-column:1/-1;margin:12px 0 0}
+.gc{flex-direction:column;align-items:flex-start;gap:6px;margin:0;padding:14px 13px;border-radius:20px;min-height:168px;background:linear-gradient(165deg,#21414a,#18323a);border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden}
+.gc::before{content:'';position:absolute;left:0;top:0;right:0;height:4px;background:var(--A)}
+.gc.c-ffa::before{background:var(--B)}.gc.c-calm::before{background:#a77bff}
+.gc .ic{font-size:2.3rem;width:auto;text-align:left;line-height:1}
+.gc b{font-size:1rem;line-height:1.2}
+.gc small{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:.78rem}
+.gc .go{margin:auto 0 0;padding:6px 12px;font-size:.78rem}
+.gc>span:nth-child(2){display:block}
+.hello{margin:8px 0 12px}.hello .hi{font-size:1.45rem;font-weight:900}.hello .dt{color:var(--sub);font-weight:700;font-size:.92rem}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hcard{display:flex;flex-direction:column;align-items:flex-start;gap:4px;border:0;border-radius:20px;padding:15px;min-height:128px;text-align:left;cursor:pointer;font-family:inherit;color:#fff}
+.hcard.sea{background:linear-gradient(160deg,#2d9cdb,#1565a6)}.hcard.sand{background:linear-gradient(160deg,#ffd27a,#f2a65a);color:#3a2410}
+.hcard .lab{font-weight:800;font-size:.82rem;opacity:.95}.hcard .big{font-weight:900;font-size:1.35rem;line-height:1.15;margin-top:auto}.hcard .sm{font-weight:700;font-size:.8rem;opacity:.9}
+.people{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.people .pl{background:var(--card);border-radius:999px;padding:7px 12px 7px 9px;border:0;font-size:.9rem;gap:7px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.quick button{background:var(--card);border:0;border-radius:18px;padding:12px 4px;color:#fff;font-weight:800;font-size:.78rem;font-family:inherit;cursor:pointer}
+.quick button span{display:block;font-size:1.6rem;margin-bottom:4px}
+.tip{margin-top:14px;background:linear-gradient(160deg,#24434b,#1b3239);border-radius:18px;padding:14px;line-height:1.5;font-size:.92rem;color:#dbe8ea;border-left:4px solid var(--sol)}
+.tabbar{background:rgba(12,28,32,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.07)}
+.tabbar button{font-family:inherit;font-size:.7rem}
+.card{background:var(--card);border:1px solid rgba(255,255,255,.05);border-radius:18px}
+.how{border-radius:18px}
+.btn,.tb,.chip,.vbtn,input{font-family:inherit}
+.status{margin-top:8px}
+#lobby .list{background:var(--card)}
 </style>
 </head>
 <body>
 <canvas id="cv"></canvas>
 
 <div class="ov on" id="lobby">
-  <div class="panel" style="padding-bottom:90px">
-    <h1>Arena <span>Porto de Galinhas</span></h1>
-    <div class="how" id="salaBox" style="margin-top:6px">
-      <b>Sala da galera</b> <span id="salaInfo" style="color:#b9cfd3">· conectando…</span>
-      <div class="row2" id="salaBtns" style="display:none"><button class="btn ghost" id="mkRoom" style="margin-top:10px">🔄 Reconectar</button></div>
+  <header class="hero">
+    <svg class="sun" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="22" fill="#ffd166"/><g stroke="#ffd166" stroke-width="4" stroke-linecap="round"><line x1="80.0" y1="50.0" x2="90.0" y2="50.0"/><line x1="71.2" y1="71.2" x2="78.3" y2="78.3"/><line x1="50.0" y1="80.0" x2="50.0" y2="90.0"/><line x1="28.8" y1="71.2" x2="21.7" y2="78.3"/><line x1="20.0" y1="50.0" x2="10.0" y2="50.0"/><line x1="28.8" y1="28.8" x2="21.7" y2="21.7"/><line x1="50.0" y1="20.0" x2="50.0" y2="10.0"/><line x1="71.2" y1="28.8" x2="78.3" y2="21.7"/></g></svg>
+    <div class="htop">
+      <div><p class="kick">Viagem da galera 🌴</p><h1>Porto de Galinhas</h1></div>
+      <button class="avatar" id="avatarBtn" aria-label="Perfil">👤</button>
     </div>
+    <div class="conn" id="salaBox"><span class="dotc" id="connDot"></span><span id="salaInfo">conectando…</span>
+      <span id="salaBtns" style="display:none"><button class="pill" id="mkRoom">🔄 Reconectar</button></span></div>
+    <svg class="wave" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 22 Q50 6 100 20 T200 20 T300 18 T400 20 V40 H0Z" fill="#0f2226"/><path d="M0 28 Q60 16 120 27 T240 26 T400 26 V40 H0Z" fill="#0f2226" opacity=".6"/></svg>
+  </header>
+  <div class="panel body">
+    <div class="how" id="needProfile" style="display:none;border:2px solid var(--sol)">👤 Crie seu perfil (nome, time e boneco) pra jogar e votar.<button class="btn" id="goPerfil" style="margin-top:10px">Criar meu perfil</button></div>
+    <section class="tabp" data-tab="inicio">
+      <div id="homeHello" class="hello"></div>
+      <div class="hgrid">
+        <button class="hcard sea" id="hMare"></button>
+        <button class="hcard sand" id="hComer"></button>
+      </div>
+      <div class="sechead" style="margin-top:18px"><h3>Na sala agora</h3></div>
+      <div id="plist" class="people"></div>
+      <p class="status" id="status">Conectando…</p>
+      <div class="sechead" style="margin-top:14px"><h3>Atalhos</h3></div>
+      <div class="quick">
+        <button data-go="jogos"><span>🎮</span>Jogar</button>
+        <button data-go="mares"><span>🌊</span>Marés</button>
+        <button data-go="comer"><span>🍽️</span>Comer</button>
+        <button data-go="passeios"><span>🚤</span>Passeios</button>
+      </div>
+      <div class="tip" id="hTip"></div>
+    </section>
 
     <section class="tabp" data-tab="jogos">
-      <div class="how" id="needProfile" style="display:none;border:2px solid var(--sol)">👤 Primeiro crie seu perfil (nome, time e boneco) pra poder jogar.<button class="btn" id="goPerfil" style="margin-top:10px">Criar meu perfil</button></div>
-      <div class="list" id="plist"></div>
-      <p class="status" id="status">Conectando…</p>
-      <button class="btn" id="joinPlay" style="display:none">Entrar na partida em andamento</button>
+      <div class="sechead"><h2>Jogos</h2><button class="pill" id="goRank">🏆 Ranking</button></div>
+      <div class="filt" id="filt"><button class="on" data-f="all">Todos</button><button data-f="team">Em dupla</button><button data-f="ffa">Cada um</button><button data-f="calm">Calmos</button></div>
+      
+            <button class="btn" id="joinPlay" style="display:none">Entrar na partida em andamento</button>
     <div id="games">
         <p class="grp">Em dupla (Coral × Azul)</p>
         <button class="gc" data-g="conchas"><span class="ic">🐚</span><span><b>Guerra das Conchas</b><small>Pegue conchas (1 pt) e estrelas (3 pts). Fuja da sombra dos cocos: quem leva coco perde 1 pt. 90s.</small></span><span class="go">Jogar</span></button>
@@ -159,7 +235,7 @@ input:focus{outline:none;border-color:var(--sol)}
     </section>
 
     <section class="tabp" data-tab="mares">
-      <p class="grp">Tábua de marés · Porto de Galinhas</p>
+      <div class="sechead"><h2>Marés</h2></div>
       <div id="mareHoje"></div>
       <div class="how" style="font-size:.84rem"><b>Regra das piscinas naturais:</b> o passeio de jangada só vale com <b>maré baixa de 0.5 m ou menos</b>, de dia. De 0.0 a 0.3 é perfeito. A partir de 0.6, não vale a pena. Vá no horário da maré baixa ou até 1 hora antes.</div>
       <div id="mareList"></div>
@@ -167,14 +243,14 @@ input:focus{outline:none;border-color:var(--sol)}
     </section>
 
     <section class="tabp" data-tab="comer">
-      <p class="grp">Onde comer hoje? Votem!</p>
+      <div class="sechead"><h2>Onde comer</h2></div>
       <div class="how" id="voteBox" style="font-size:.88rem">Toque em <b>👍 Quero ir</b> no lugar que você prefere. Os votos de todos aparecem aqui em tempo real.</div>
       <div id="comerList"></div>
       <p class="status" style="text-align:left">Preço médio por pessoa e horários segundo o guia grupodicas.com (2026). Podem ter mudado: confira antes de ir. Alta temporada: chegue cedo ou reserve.</p>
     </section>
 
     <section class="tabp" data-tab="passeios">
-      <p class="grp">Passeios · preços de referência</p>
+      <div class="sechead"><h2>Passeios</h2></div>
       <div class="how" style="font-size:.84rem">Valores pesquisados em guias e sites de agências (2025–2026). <b>Variam com a temporada e sempre dá pra negociar</b>, principalmente buggy e quadriciclo. Pergunte se o preço é por pessoa ou por veículo.</div>
       <div id="passList"></div>
       <p class="grp">Contatos e onde contratar</p>
@@ -183,6 +259,7 @@ input:focus{outline:none;border-color:var(--sol)}
     </section>
 
     <section class="tabp" data-tab="perfil">
+      <div class="sechead"><h2>Seu perfil</h2></div>
       <label>Seu nome</label>
       <input id="nm" maxlength="12" placeholder="Seu apelido">
       <label>Seu time</label>
@@ -193,12 +270,13 @@ input:focus{outline:none;border-color:var(--sol)}
       <label>Seu boneco</label>
       <div class="chips" id="acs"></div>
       <div class="chips" id="accs" style="margin-top:8px"></div>
-      <button class="btn" id="join">Salvar e ir pros jogos</button>
+      <button class="btn" id="join">Salvar perfil</button>
       <label>Som</label>
       <button class="btn ghost" id="sndBtn" style="margin-top:0">🔊 Som</button>
     </section>
 
     <section class="tabp" data-tab="ranking">
+      <div class="sechead"><h2>Ranking da viagem</h2><button class="pill" id="backJogos">← Jogos</button></div>
       <p class="sub" style="margin-top:12px">Vitórias de todas as partidas vistas neste celular. Não zera ao fechar.</p>
       <div class="score" id="rkTeams"></div>
       <div class="list" id="rkList"></div>
@@ -206,12 +284,11 @@ input:focus{outline:none;border-color:var(--sol)}
     </section>
   </div>
   <nav class="tabbar" id="tabbar">
+    <button data-t="inicio"><span>🏠</span>Início</button>
     <button data-t="jogos"><span>🎮</span>Jogos</button>
     <button data-t="mares"><span>🌊</span>Marés</button>
     <button data-t="comer"><span>🍽️</span>Comer</button>
     <button data-t="passeios"><span>🚤</span>Passeios</button>
-    <button data-t="ranking"><span>🏆</span>Ranking</button>
-    <button data-t="perfil"><span>👤</span>Perfil</button>
   </nav>
 </div>
 <span id="rankBtn" style="display:none"></span><span id="rkClose" style="display:none"></span>
@@ -307,6 +384,23 @@ try{const s=JSON.parse(localStorage.getItem('gdc')||'{}');if(s.n)$('nm').value=s
 renderAc();
 setTimeout(()=>{if($('nm').value.trim()&&myTeam){$('join').onclick()}else setTab('perfil')},50);
 let curTab='perfil',myRv='';
+const TIPS=['Compre a jangada das piscinas naturais só no guichê oficial dos jangadeiros, no portal da praia.','Passe protetor solar a cada 2 horas, e de novo depois de sair da água.','Buggy e quadriciclo são cobrados por veículo: dividam entre os 4!','Nas piscinas naturais, não pise nos corais e não alimente os peixes.','Pôr do sol bonito: Pontal de Maracaípe, onde o rio encontra o mar.','Leve dinheiro ou Pix: muita barraca e jangada não aceita cartão.','Na alta temporada, chegue cedo nos restaurantes da Rua Esperança.','Muro Alto tem água calma o dia todo: boa pra caiaque e stand up.'];
+function renderHome(players){players=players||[];const now2=new Date();const h=now2.getHours();const sau=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+ const dt=now2.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+ $('homeHello').innerHTML=`<div class="hi">${sau}${joined?', '+esc(myName):''}! 👋</div><div class="dt">${esc(dt.charAt(0).toUpperCase()+dt.slice(1))}</div>`;
+ const k=ymd(now2);let mt='Tábua até 30/11';let mv='Toque pra ver as marés';
+ if(MARES[k]){const lo=bestLow(MARES[k]);const v=verdict(lo);mt=lo?lo[0]+' · '+lo[1].toFixed(1)+' m':'—';mv=v[0]}
+ $('hMare').innerHTML=`<span class="lab">🌊 Maré baixa hoje</span><span class="big">${mt}</span><span class="sm">${mv}</span>`;
+ const c=voteCounts();const top=Object.entries(c).sort((a,b)=>b[1].length-a[1].length)[0];const r=top&&COMER.find(x=>x[0]===top[0]);
+ $('hComer').innerHTML=`<span class="lab">🍽️ Onde comer</span><span class="big">${r?esc(r[1]):'Vote!'}</span><span class="sm">${r?top[1].length+' voto'+(top[1].length>1?'s':''):'Ninguém votou ainda'}</span>`;
+ $('hTip').innerHTML=`<b>💡 Dica do dia</b><br>${esc(TIPS[(now2.getDate()+now2.getMonth())%TIPS.length])}`;
+ $('avatarBtn').textContent=joined&&myName?myName.charAt(0).toUpperCase():'👤'}
+$('hMare').onclick=()=>setTab('mares');$('hComer').onclick=()=>setTab('comer');
+document.querySelectorAll('.quick [data-go]').forEach(b=>b.onclick=()=>setTab(b.dataset.go));
+$('avatarBtn').onclick=()=>setTab('perfil');$('goRank').onclick=()=>setTab('ranking');$('backJogos').onclick=()=>setTab('jogos');
+document.querySelectorAll('#filt button').forEach(b=>b.onclick=()=>{const f=b.dataset.f;document.querySelectorAll('#filt button').forEach(x=>x.classList.toggle('on',x===b));
+ document.querySelectorAll('#games .gc').forEach(g=>{g.style.display=f==='all'||g.dataset.cat===f?'':'none'});document.querySelectorAll('#games .grp').forEach(g=>g.style.display=f==='all'?'':'none')});
+setTimeout(()=>{document.querySelectorAll('#games .gc').forEach(g=>{const k=g.dataset.g;g.dataset.cat=CALM.has(k)?'calm':INDIV.has(k)?'ffa':'team';g.classList.add('c-'+g.dataset.cat)})},0);
 const MARES={'2026-11-22':[['01:39',2.1],['08:01',0.3],['14:03',2.1],['20:16',0.2]],'2026-11-23':[['02:28',2.3],['08:44',0.2],['14:47',2.2],['21:03',0.1]],'2026-11-24':[['03:13',2.3],['09:25',0.2],['15:33',2.3],['21:51',0.1]],'2026-11-25':[['04:02',2.3],['10:12',0.2],['16:16',2.4],['22:37',0.1]],'2026-11-26':[['04:53',2.3],['11:00',0.3],['17:06',2.3],['23:32',0.1]],'2026-11-27':[['05:44',2.2],['11:48',0.4],['17:59',2.3]],'2026-11-28':[['00:22',0.2],['06:40',2.1],['12:47',0.5],['18:55',2.2]],'2026-11-29':[['01:30',0.3],['07:39',1.9],['13:44',0.6],['19:58',2.0]],'2026-11-30':[['02:34',0.5],['08:46',1.8],['14:59',0.7],['21:05',2.0]]};
 const DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -367,7 +461,7 @@ const CONT=[
  ['MarIA · assistente oficial do destino','Assistente do Porto de Galinhas Convention & Visitors Bureau, que responde 24h no WhatsApp. Ela indica passeios, restaurantes e serviços cadastrados.',[['📷 @portodegalinhas','https://www.instagram.com/portodegalinhas/']]]];
 function renderPasseios(){$('passList').innerHTML=PASS.map(p=>`<div class="card"><h3>${p[0]} ${esc(p[1])}</h3><div class="pr">${esc(p[2])}</div><div class="m" style="margin-top:4px">${esc(p[3])}</div></div>`).join('');
  $('contList').innerHTML=CONT.map(c=>`<div class="card"><h3>${esc(c[0])}</h3><div class="m">${esc(c[1])}</div>${c[2].length?`<div class="acts">${c[2].map(a=>`<a href="${a[1]}" target="_blank" rel="noopener">${esc(a[0])}</a>`).join('')}</div>`:''}</div>`).join('')}
-function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===t));if(t==='ranking')showRank();if(t==='mares')renderMares();if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
+function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));const tb=t==='ranking'?'jogos':t;document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===tb));if(t==='ranking')showRank();if(t==='inicio')renderHome(peersList());if(t==='mares')renderMares();if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
 document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 function renderAc(){$('acs').innerHTML=ACS.map((a,i)=>`<button class="chip${i===myAc?' on':''}" data-i="${i}">${a}</button>`).join('');
  $('acs').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{myAc=+b.dataset.i;saveMe();renderAc()});
@@ -378,7 +472,7 @@ function pick(t){myTeam=t;document.querySelectorAll('.tb').forEach(b=>b.classLis
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>pick(b.dataset.t));
 $('join').onclick=()=>{const n=$('nm').value.trim();if(!n){$('nm').focus();return}if(!myTeam){pick(Math.random()<.5?'A':'B')}
  myName=n.slice(0,12);joined=true;saveMe();
- spawnMe();renderLobby();setTab('jogos')};
+ spawnMe();renderLobby();setTab('inicio')};
 $('goPerfil').onclick=()=>setTab('perfil');
 document.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{gp=b.dataset.g;goCount++});
 $('joinPlay').onclick=()=>{$('lobby').classList.remove('on');showLobbyLocal=false};
@@ -428,8 +522,8 @@ function tryJoin(){netReset();NET.err='entrando…';renderSala();const myId='1'+
   c.on('close',()=>{if(NET.peer!==pe)return;NET.others=new Map();NET.err='a sala caiu, reconectando…';netSet(false);retry(tryCreate,300+Math.random()*1500)})});
  pe.on('error',e=>{if(NET.peer!==pe)return;if(e&&e.type==='peer-unavailable'){retry(tryCreate,300+Math.random()*700);return}NET.err='erro de conexão, tentando de novo…';renderSala();retry(tryCreate)})}
 function renderSala(){const info=$('salaInfo');if(!info)return;
- if(NET.ok){const n=room.peers().length;info.innerHTML=` · <b style="color:#7CFC9A">conectado ✓</b> ${NET.host?'(seu celular é a sala, deixe o app aberto)':''}`;$('salaBtns').style.display='none'}
- else{info.textContent=' · '+(NET.err||'conectando…');$('salaBtns').style.display=/Reconectar|treino|navegador/.test(NET.err)?'flex':'none'}
+ const dot=$('connDot');if(NET.ok){info.textContent='Sala da galera · conectado'+(NET.host?' · seu celular é a sala':'');dot.className='dotc ok';$('salaBtns').style.display='none'}
+ else{info.textContent=NET.err?NET.err.charAt(0).toUpperCase()+NET.err.slice(1):'Conectando…';dot.className='dotc';$('salaBtns').style.display=/Reconectar|treino|navegador/.test(NET.err)?'inline':'none'}
  renderLobby()}
 $('mkRoom').onclick=()=>autoConnect();
 setTimeout(autoConnect,300);
@@ -720,8 +814,9 @@ function rp(p){if(p.me)return pos;let r=rpos[p.peer];if(!r){r=rpos[p.peer]={x:p.
 // ---------- lobby / end ----------
 let lobT=0;
 function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();
- $('plist').innerHTML=players.length?players.map(p=>`<div class="pl"><span class="dot ${p.tm}"></span>${esc(p.nm)} ${p.me?'<span class="me">você</span>':''}</div>`).join(''):'<div class="pl" style="color:#b9cfd3">Ninguém na praia ainda</div>';
- const inPlay=world.ph==='play';$('games').style.display=!inPlay?'block':'none';$('needProfile').style.display=joined?'none':'block';document.querySelectorAll('.gc').forEach(b=>b.disabled=!joined);$('joinPlay').style.display=joined&&inPlay?'block':'none';
+ const plk=JSON.stringify(players.map(p=>[p.nm,p.tm,p.me]));if($('plist')._k!==plk){$('plist')._k=plk;$('plist').innerHTML=players.length?players.map(p=>`<div class="pl"><span class="dot ${p.tm}"></span>${esc(p.nm)}${p.me?' <span class="me">você</span>':''}</div>`).join(''):'<div class="pl" style="color:#b9cfd3">Ninguém ainda</div>'}
+ if(curTab==='inicio')renderHome(players);
+ const inPlay=world.ph==='play';$('games').style.display=!inPlay?'block':'none';$('needProfile').style.display=joined||curTab==='perfil'?'none':'block';document.querySelectorAll('.gc').forEach(b=>b.disabled=!joined);$('joinPlay').style.display=joined&&inPlay?'block':'none';
  if(inPlay)$('joinPlay').textContent='Entrar: '+(GAMES[world.g]||GAMES.conchas).n+' em andamento';
  renderLobby(players.length)}
 function renderLobby(n){const s=$('status');if(!s)return;

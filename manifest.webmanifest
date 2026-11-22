@@ -1,7 +1,7 @@
 {
-  "name": "Arena Porto de Galinhas",
-  "short_name": "Arena PG",
-  "description": "17 jogos de praia para jogar com os amigos, cada um no seu celular.",
+  "name": "Porto de Galinhas · Viagem da galera",
+  "short_name": "Porto PG",
+  "description": "Jogos, marés, onde comer e passeios da viagem a Porto de Galinhas.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
