@@ -1,10 +1,10 @@
 # Arena Porto de Galinhas 🌴
 
-15 jogos de praia para jogar com os amigos, cada um no seu celular.
+16 jogos de praia para jogar com os amigos, cada um no seu celular.
 
 **Em dupla (Coral × Azul):** Guerra das Conchas, Futebol de Areia, Rei da Boia, Guerra d'Água 2x2 e Vôlei de Praia.
 **Todos contra todos:** Cada Um Por Si, Fuja do Tubarão, Estoura Balão e Corrida de Buggy.
-**Calmos:** Quiz Relâmpago, Desenha e Adivinha, Quem é o Impostor?, Stop! (Adedanha), Quem É Mais Provável? e Jogo da Memória.
+**Calmos:** Quiz Relâmpago, Desenha e Adivinha, Quem é o Impostor?, Stop! (Adedanha), Quem É Mais Provável?, Roleta Russa d'Água e Jogo da Memória.
 
 ## Como jogar
 1. Todos abrem o app. A sala é automática: o primeiro celular vira a sala e os outros entram sozinhos.

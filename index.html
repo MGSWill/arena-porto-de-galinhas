@@ -77,6 +77,8 @@ input:focus{outline:none;border-color:var(--sol)}
 #dcv{width:100%;aspect-ratio:1;background:#fff;border-radius:16px;touch-action:none;display:block}
 .tools{display:flex;gap:8px;margin-top:8px;align-items:center}
 .feed{font-size:.9rem;color:#dbe8ea;line-height:1.5;margin-top:8px;min-height:20px}
+.ch{display:inline-block;width:30px;height:30px;border-radius:50%;border:3px solid #13262b;margin:0 4px;background:#cfd8dc}.ch.used{background:#13262b}.ch.now{box-shadow:0 0 0 4px #ffc145}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}.shake{animation:shake .25s 3}
 .mc{aspect-ratio:1;border:0;border-radius:14px;font-size:2rem;background:#2d7fd6;color:#fff;cursor:pointer}
 .mc.up{background:#fff}.mc.done{background:#e7f6ea;opacity:.75}
 .sf{display:flex;align-items:center;gap:8px;margin-top:8px}.sf span{width:110px;font-weight:700;font-size:.9rem;color:#dbe8ea}.sf input{padding:11px}
@@ -92,7 +94,7 @@ input:focus{outline:none;border-color:var(--sol)}
 <div class="ov on" id="lobby">
   <div class="panel">
     <h1>Arena <span>Porto de Galinhas</span></h1>
-    <p class="sub">15 jogos · cada um no seu celular 🌴</p>
+    <p class="sub">16 jogos · cada um no seu celular 🌴</p>
     <div class="how" id="salaBox" style="margin-top:0">
       <b>Sala da galera</b> <span id="salaInfo" style="color:#b9cfd3">· conectando…</span>
       <div class="row2" id="salaBtns" style="display:none"><button class="btn ghost" id="mkRoom" style="margin-top:10px">🔄 Reconectar</button></div>
@@ -128,6 +130,7 @@ input:focus{outline:none;border-color:var(--sol)}
       <button class="gc" data-g="impostor"><span class="ic">🤫</span><span><b>Quem é o Impostor?</b><small>Todos recebem a mesma palavra, menos o impostor. Cada um dá uma dica e depois todos votam em quem está blefando.</small></span><span class="go">Jogar</span></button>
       <button class="gc" data-g="stop"><span class="ic">✋</span><span><b>Stop! (Adedanha)</b><small>Sai uma letra, cada um preenche nome, animal, cidade… Quem terminar grita STOP. Resposta única vale 10 pontos.</small></span><span class="go">Jogar</span></button>
       <button class="gc" data-g="voto"><span class="ic">👉</span><span><b>Quem É Mais Provável?</b><small>Aparece uma situação e todos votam em alguém do grupo. Quem votar igual à maioria pontua.</small></span><span class="go">Jogar</span></button>
+      <button class="gc" data-g="roleta"><span class="ic">🔫</span><span><b>Roleta Russa d'Água</b><small>Pistola d'água com 6 câmaras e só uma carregada. Cada um na sua vez puxa o gatilho. Quem se molhar sai; o último seco vence.</small></span><span class="go">Jogar</span></button>
       <button class="gc" data-g="memoria"><span class="ic">🃏</span><span><b>Jogo da Memória</b><small>Cada um na sua vez vira 2 cartas. Achou o par, pontua e joga de novo.</small></span><span class="go">Jogar</span></button>
     </div>
     <div class="row2"><button class="btn ghost" id="rankBtn">🏆 Ranking da viagem</button><button class="btn ghost" id="sndBtn">🔊 Som</button></div>
@@ -193,6 +196,11 @@ input:focus{outline:none;border-color:var(--sol)}
     <div id="vOpts"></div>
     <p class="feed" id="vFb"></p>
   </div>
+  <div id="rolUI">
+    <div class="qq" id="rStage" style="flex-direction:column;gap:10px;min-height:190px"></div>
+    <button class="btn" id="rPull">🔫 Puxar o gatilho</button>
+    <div class="mini" id="rAlive"></div>
+  </div>
   <div id="memUI">
     <p class="feed" id="mTurn" style="text-align:center;font-weight:800"></p>
     <div id="mGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
@@ -203,12 +211,12 @@ input:focus{outline:none;border-color:var(--sol)}
 <script>
 const W=1,H=1.5,R=0.036,SPEED=0.42,WATER=0.17,TOP=0.06,BR=0.026,GW=0.34;
 const GAMES={conchas:{n:'Guerra das Conchas',d:90,i:'🐚'},futebol:{n:'Futebol de Areia',d:120,i:'⚽'},boia:{n:'Rei da Boia',d:75,i:'🛟'},tiro:{n:"Guerra d'Água 2x2",d:120,i:'🔫'},ffa:{n:'Cada Um Por Si',d:120,i:'💦'},volei:{n:'Vôlei de Praia',d:120,i:'🏐'},tubarao:{n:'Fuja do Tubarão',d:90,i:'🦈'},balao:{n:'Estoura Balão',d:120,i:'🎈'},buggy:{n:'Corrida de Buggy',d:150,i:'🏁'},quiz:{n:'Quiz Relâmpago',d:900,i:'❓'},desenho:{n:'Desenha e Adivinha',d:1200,i:'🎨'}};
-Object.assign(GAMES,{impostor:{n:'Quem é o Impostor?',d:1500,i:'🤫'},stop:{n:'Stop! (Adedanha)',d:1500,i:'✋'},voto:{n:'Quem É Mais Provável?',d:900,i:'👉'},memoria:{n:'Jogo da Memória',d:1200,i:'🃏'}});
-const INDIV=new Set(['ffa','tubarao','balao','buggy','quiz','desenho','impostor','stop','voto','memoria']),CALM=new Set(['quiz','desenho','impostor','stop','voto','memoria']);
+Object.assign(GAMES,{impostor:{n:'Quem é o Impostor?',d:1500,i:'🤫'},stop:{n:'Stop! (Adedanha)',d:1500,i:'✋'},voto:{n:'Quem É Mais Provável?',d:900,i:'👉'},memoria:{n:'Jogo da Memória',d:1200,i:'🃏'},roleta:{n:"Roleta Russa d'Água",d:900,i:'🔫'}});
+const INDIV=new Set(['ffa','tubarao','balao','buggy','quiz','desenho','impostor','stop','voto','memoria','roleta']),CALM=new Set(['quiz','desenho','impostor','stop','voto','memoria','roleta']);
 const CATS=['Nome','Animal','Cidade ou país','Comida ou fruta','Objeto','Cor ou marca'],LETTERS='ABCDEFGLMNPRSTV';
 const PROV=['Quem é mais provável de perder o documento na viagem?','Quem é mais provável de dormir na espreguiçadeira e se queimar?','Quem é mais provável de chorar vendo o pôr do sol?','Quem é mais provável de fazer amizade com um vendedor de praia?','Quem é mais provável de gastar tudo no primeiro dia?','Quem é mais provável de querer se mudar pra Porto de Galinhas?','Quem é mais provável de esquecer algo no hotel?','Quem é mais provável de pedir 50 fotos da mesma pose?','Quem é mais provável de chegar atrasado no passeio?','Quem é mais provável de se perder no centrinho?','Quem é mais provável de reclamar do calor a cada 5 minutos?','Quem é mais provável de puxar um forró às 2 da manhã?','Quem é mais provável de ser o último a sair da água?','Quem é mais provável de pedir comida de novo 1 hora depois de comer?','Quem é mais provável de virar meme da viagem?','Quem é mais provável de cantar alto no chuveiro do hotel?','Quem é mais provável de ficar com medo de peixe no mergulho?','Quem é mais provável de comprar uma lembrancinha inútil?','Quem é mais provável de acordar todo mundo cedo demais?','Quem é mais provável de se enrolar pra pagar a conta?','Quem é mais provável de virar influencer de viagem?','Quem é mais provável de dormir no voo antes de decolar?','Quem é mais provável de pedir pra voltar pro hotel primeiro?','Quem é mais provável de ganhar todos os jogos da Arena?'];
 const MEMO=['🐚','🦀','🐠','🥥','🌴','☀️','🛟','🍹','🐙','🦈'];
-const UNIT={conchas:'🐚',futebol:'⚽',boia:'s',tiro:'💦',ffa:'💦',volei:'🏐',tubarao:'s',balao:'🎈',buggy:'voltas',quiz:'pts',desenho:'pts',impostor:'pts',stop:'pts',voto:'pts',memoria:'pares'};
+const UNIT={conchas:'🐚',futebol:'⚽',boia:'s',tiro:'💦',ffa:'💦',volei:'🏐',tubarao:'s',balao:'🎈',buggy:'voltas',quiz:'pts',desenho:'pts',impostor:'pts',stop:'pts',voto:'pts',memoria:'pares',roleta:'pts'};
 const TK={cx:.5,cy:.86,a:.36,b:.56,w:.085},LAPS=4;
 const ACS=['Nada','🕶️ Óculos','👒 Chapéu','🧢 Boné','🌺 Flor','👑 Coroa'],ACC=['#ffffff','#ffc145','#ff4d6d','#2f9bff','#3fae4a','#13262b'];
 const QUIZ=[["Porto de Galinhas fica em qual estado?",["Pernambuco","Bahia","Alagoas","Paraíba"],0],["Qual é a capital de Pernambuco?",["Olinda","Recife","Caruaru","Petrolina"],1],["Qual atração de Porto de Galinhas aparece na maré baixa?",["Dunas","Cachoeiras","Piscinas naturais","Cavernas"],2],["Que animal aparece em esculturas espalhadas por Porto de Galinhas?",["Tartaruga","Galinha","Golfinho","Caranguejo"],1],["O forró tradicional é tocado com sanfona, triângulo e…",["Zabumba","Guitarra","Violino","Saxofone"],0],["Luiz Gonzaga ficou conhecido como o Rei do…",["Samba","Frevo","Baião","Axé"],2],["O frevo é um ritmo típico de qual estado?",["Ceará","Pernambuco","Maranhão","Sergipe"],1],["Quantos estados tem a região Nordeste?",["7","8","9","10"],2],["Qual ilha de Pernambuco é famosa pelos golfinhos?",["Ilhabela","Fernando de Noronha","Ilha Grande","Itaparica"],1],["O bolo de rolo é um doce típico de qual estado?",["Pernambuco","Minas Gerais","Pará","Goiás"],0],["Qual cidade vizinha do Recife é famosa pelos bonecos gigantes no Carnaval?",["Caruaru","Olinda","Garanhuns","Gravatá"],1],["Qual rio corta a cidade do Recife?",["São Francisco","Capibaribe","Tietê","Parnaíba"],1],["O Galo da Madrugada é…",["Um prato típico","Um bloco de Carnaval","Uma praia","Um time de futebol"],1],["A tapioca é feita a partir de qual alimento?",["Milho","Trigo","Mandioca","Arroz"],2],["Qual é o maior estado do Brasil em área?",["Pará","Mato Grosso","Bahia","Amazonas"],3],["Qual é o maior oceano do mundo?",["Atlântico","Índico","Pacífico","Ártico"],2],["O cavalo-marinho é um tipo de…",["Molusco","Peixe","Crustáceo","Mamífero"],1],["Quantos braços tem a maioria das estrelas-do-mar?",["3","5","8","10"],1],["Qual planeta é conhecido como planeta vermelho?",["Vênus","Júpiter","Marte","Saturno"],2],["Em que ano o Brasil ganhou a Copa pela quinta vez?",["1994","1998","2002","2006"],2],["Qual é a capital da Bahia?",["Salvador","Aracaju","Ilhéus","Feira de Santana"],0],["Quantos lados tem um hexágono?",["5","6","7","8"],1],["Que gás as plantas absorvem do ar para fazer fotossíntese?",["Oxigênio","Nitrogênio","Gás carbônico","Hélio"],2],["Quantos minutos dura um jogo de futebol no tempo normal?",["80","90","100","120"],1],["Na peça de Ariano Suassuna, quem é o parceiro de Chicó?",["João Grilo","Lampião","Zé Pequeno","Severino"],0],["Qual destes NÃO é um estado do Nordeste?",["Piauí","Sergipe","Tocantins","Rio Grande do Norte"],2],["Quantos dias tem um ano bissexto?",["364","365","366","367"],2],["Qual é o animal mais rápido em terra?",["Leão","Guepardo","Cavalo","Antílope"],1]];
@@ -270,7 +278,7 @@ function retry(fn,ms){netTry++;if(netTry>12){NET.err='Não consegui conectar. To
 function autoConnect(){netTry=0;tryCreate()}
 // tenta ser a sala; se já existir alguém, entra nela
 function tryCreate(){if(typeof Peer==='undefined'){NET.err='sem internet (modo treino sozinho)';renderSala();return}
- netReset();NET.err='conectando…';renderSala();const pe=new Peer(FIXED_ID,{debug:0});NET.peer=pe;
+ netReset();NET.err='conectando…';renderSala();let pe;try{pe=new Peer(FIXED_ID,{debug:0})}catch(e){NET.err='este navegador não conecta (modo treino sozinho). Abra pelo Safari ou Chrome.';renderSala();return}NET.peer=pe;
  pe.on('open',()=>{NET.host=true;NET.code='galera';NET.myId='0host';NET.err='';netTry=0;netSet(true);
   NET.bt=setInterval(()=>{const all=[[NET.myId,NET.pres]];for(const[id,pr]of NET.others)all.push([id,pr]);for(const[id,c]of NET.conns){if(!c.open)continue;if(c.dataChannel&&c.dataChannel.bufferedAmount>65536)continue;try{c.send({t:'a',l:all.filter(x=>x[0]!==id)})}catch(e){}}},55)});
  pe.on('connection',c=>{const id=String((c.metadata&&c.metadata.id)||('1'+Math.random().toString(36).slice(2,8))).slice(0,20);
@@ -279,7 +287,7 @@ function tryCreate(){if(typeof Peer==='undefined'){NET.err='sem internet (modo t
  pe.on('error',e=>{if(e&&e.type==='unavailable-id'){tryJoin();return}if(e&&e.type==='peer-unavailable')return;NET.err='erro de conexão ('+(e&&e.type||'?')+'), tentando de novo…';renderSala();retry(tryCreate)});
  pe.on('disconnected',()=>{try{pe.reconnect()}catch(e){}})}
 function tryJoin(){netReset();NET.err='entrando…';renderSala();const myId='1'+Math.random().toString(36).slice(2,9);
- const pe=new Peer({debug:0});NET.peer=pe;
+ let pe;try{pe=new Peer({debug:0})}catch(e){NET.err='este navegador não conecta (modo treino sozinho). Abra pelo Safari ou Chrome.';renderSala();return}NET.peer=pe;
  pe.on('open',()=>{const c=pe.connect(FIXED_ID,{metadata:{id:myId},serialization:'json',reliable:true});NET.hc=c;
   joinTimer=setTimeout(()=>{if(!NET.ok)retry(tryCreate,300)},8000);
   c.on('open',()=>{clearTimeout(joinTimer);NET.code='galera';NET.myId=myId;NET.err='';netTry=0;netSet(true)});
@@ -288,7 +296,7 @@ function tryJoin(){netReset();NET.err='entrando…';renderSala();const myId='1'+
  pe.on('error',e=>{if(NET.peer!==pe)return;if(e&&e.type==='peer-unavailable'){retry(tryCreate,300+Math.random()*700);return}NET.err='erro de conexão, tentando de novo…';renderSala();retry(tryCreate)})}
 function renderSala(){const info=$('salaInfo');if(!info)return;
  if(NET.ok){const n=room.peers().length;info.innerHTML=` · <b style="color:#7CFC9A">conectado ✓</b> ${NET.host?'(seu celular é a sala, deixe o app aberto)':''}`;$('salaBtns').style.display='none'}
- else{info.textContent=' · '+(NET.err||'conectando…');$('salaBtns').style.display=/Reconectar|treino/.test(NET.err)?'flex':'none'}
+ else{info.textContent=' · '+(NET.err||'conectando…');$('salaBtns').style.display=/Reconectar|treino|navegador/.test(NET.err)?'flex':'none'}
  renderLobby()}
 $('mkRoom').onclick=()=>autoConnect();
 setTimeout(autoConnect,300);
@@ -301,7 +309,8 @@ function peersList(){
  if(!mineSeen&&joined)out.push(mePeer());
  return out}
 function mePeer(){return{peer:myPeer||'me',me:true,nm:myName,tm:myTeam,x:pos.x,y:pos.y,d:dir,st:now()<stunUntil,ds:now()<dashUntil,got,hit:hitCount,go:goCount,ve:myVote,gp,fs,hb,dd:now()<deadUntil,e:myExtra(),w:null}}
-function myExtra(){const e={ac:myAc,acc:myAcc};if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;return e}
+function myExtra(){const e={ac:myAc,acc:myAcc};if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;if(curG==='roleta'&&myRp)e.rp=myRp;return e}
+let myRp=null,rpN=0,lastRs=-1;
 let myIc=null,myIv=null,stopR=-1,stopAns=['','','','','',''],stopPress=false,myVv=null,myMk=null,mkN=0,lastIr=-1,lastIs='',lastSr=-1,lastSs='',lastVr=-1,lastVs='',memKey='';
 function num(v,d){return typeof v==='number'&&isFinite(v)?v:d}
 const now=()=>performance.now()/1000;
@@ -322,12 +331,13 @@ function hostStep(dt,players){
   if(g==='impostor'){hw.io=shuffle(players.map(p=>p.peer)).slice(0,Math.min(4,Math.max(2,players.length)));hw.ir=0;impRound()}
   if(g==='stop'){hw.sr=0;hw.srn=3;stopRound()}
   if(g==='voto'){hw.vo=shuffle(PROV.map((_,i)=>i)).slice(0,8);hw.vr=0;hw.vs='vote';hw.vt=20;hw.vres=null}
-  if(g==='memoria'){hw.mc=shuffle([...MEMO,...MEMO]).map(e=>MEMO.indexOf(e));hw.mm=hw.mc.map(()=>'');hw.mf=[];hw.mt=shuffle(players.map(p=>p.peer));hw.mi=0;hw.mh=0;hw.mtt=20;lastMk={}}credited=new Set();players.forEach(p=>{hw.sc[p.peer]={n:p.nm,t:p.tm,s:0};lastHit[p.peer]=p.hit});spawnT=0;cocoT=1.5;starT=8;return}
+  if(g==='memoria'){hw.mc=shuffle([...MEMO,...MEMO]).map(e=>MEMO.indexOf(e));hw.mm=hw.mc.map(()=>'');hw.mf=[];hw.mt=shuffle(players.map(p=>p.peer));hw.mi=0;hw.mh=0;hw.mtt=20;lastMk={}}
+  if(g==='roleta'){hw.ra=shuffle(players.map(p=>p.peer));hw.ri=0;hw.rb=Math.floor(Math.random()*6);hw.rc=0;hw.rt=15;hw.rh=0;hw.rl='';hw.rs=0;lastRt={}}credited=new Set();players.forEach(p=>{hw.sc[p.peer]={n:p.nm,t:p.tm,s:0};lastHit[p.peer]=p.hit});spawnT=0;cocoT=1.5;starT=8;return}
  if(hw.ph!=='play')return;
  hw.rem=Math.max(0,hw.rem-dt);
  players.forEach(p=>{if(!hw.sc[p.peer])hw.sc[p.peer]={n:p.nm,t:p.tm,s:0};const e=hw.sc[p.peer];e.n=p.nm;e.t=p.tm});
  const nv=players.filter(p=>p.ve===hw.ep).length,need=Math.floor(players.length/2)+1;hw.vn=[nv,need];if(players.length&&nv>=need){hw.rem=0;hw.early=1}
- if(SHOOT(hw.g))shooterStep(dt,players);else if(hw.g==='volei')voleiStep(dt,players);else if(hw.g==='tubarao')sharkStep(dt,players);else if(hw.g==='balao')balaoStep(dt,players);else if(hw.g==='buggy')buggyStep(dt,players);else if(hw.g==='quiz')quizStep(dt,players);else if(hw.g==='desenho')drawStep(dt,players);else if(hw.g==='impostor')impStep(dt,players);else if(hw.g==='stop')stopStep(dt,players);else if(hw.g==='voto')votoStep(dt,players);else if(hw.g==='memoria')memStep(dt,players);else if(hw.g==='futebol')soccerStep(dt,players);else if(hw.g==='boia')boiaStep(dt,players);else shellStep(dt,players);
+ if(SHOOT(hw.g))shooterStep(dt,players);else if(hw.g==='volei')voleiStep(dt,players);else if(hw.g==='tubarao')sharkStep(dt,players);else if(hw.g==='balao')balaoStep(dt,players);else if(hw.g==='buggy')buggyStep(dt,players);else if(hw.g==='quiz')quizStep(dt,players);else if(hw.g==='desenho')drawStep(dt,players);else if(hw.g==='impostor')impStep(dt,players);else if(hw.g==='stop')stopStep(dt,players);else if(hw.g==='voto')votoStep(dt,players);else if(hw.g==='memoria')memStep(dt,players);else if(hw.g==='roleta')rolStep(dt,players);else if(hw.g==='futebol')soccerStep(dt,players);else if(hw.g==='boia')boiaStep(dt,players);else shellStep(dt,players);
  if(hw.rem<=0){hw.ph='end';hw.sh=[];hw.co=[];const a=teamScore(hw,'A'),b=teamScore(hw,'B');hw.wins=hw.wins||{A:0,B:0};if(INDIV.has(hw.g)){}else if(a>b)hw.wins.A++;else if(b>a)hw.wins.B++}
 }
 function shooterStep(dt,players){hw.dz=hw.dz||[];
@@ -364,7 +374,17 @@ function drawStep(dt,players){hw.dt-=dt;const word=WORDS[hw.dw];
   const guessers=players.filter(p=>p.peer!==hw.dp);if(hw.dt<=0||(guessers.length&&guessers.every(p=>hw.gd.includes(p.peer)))||!players.some(p=>p.peer===hw.dp)){hw.ds='show';hw.dt=4}}
  else if(hw.dt<=0){hw.rd++;const dq=hw.dq.filter(k=>players.some(p=>p.peer===k));const left=hw.dq.slice(hw.rd).filter(k=>players.some(p=>p.peer===k));
   if(!left.length){hw.rem=0;return}hw.dq=hw.dq.slice(0,hw.rd).concat(left);hw.dp=left[0];let w;do{w=Math.floor(Math.random()*WORDS.length)}while(w===hw.dw);hw.dw=w;hw.gd=[];hw.fd=[];hw.dt=70;hw.ds='draw'}}
-let lastMk={};
+let lastMk={},lastRt={};
+function rolStep(dt,players){const ids=players.map(p=>p.peer);hw.ra=hw.ra.filter(k=>ids.includes(k));if(!hw.ra.length)return;
+ if(hw.ri>=hw.ra.length)hw.ri=0;
+ if(hw.rh>0){hw.rh-=dt;if(hw.rh<=0){hw.rl='';if(hw.ra.length<=1){const w=hw.ra[0];if(w&&hw.sc[w])hw.sc[w].s=(+hw.sc[w].s||0)+5;hw.rw=w||'';hw.rem=Math.min(hw.rem,2.5)}}return}
+ if(hw.ra.length<=1&&players.length>=2)return;
+ const cur=hw.ra[hw.ri];const p=players.find(x=>x.peer===cur);hw.rt-=dt;let pull=hw.rt<=0;
+ if(p){const r=p.e.rp;if(Array.isArray(r)&&r[0]===hw.ep){const n=num(r[1],0);if(n>(lastRt[cur]||0)){lastRt[cur]=n;pull=true}}}
+ if(!pull)return;hw.rs++;
+ if(hw.rc===hw.rb){hw.rl='splash:'+cur;hw.ra.splice(hw.ri,1);if(hw.ri>=hw.ra.length)hw.ri=0;hw.rb=Math.floor(Math.random()*6);hw.rc=0;hw.rh=2.6}
+ else{hw.rl='click:'+cur;if(hw.sc[cur])hw.sc[cur].s=(+hw.sc[cur].s||0)+1;hw.rc++;hw.ri=(hw.ri+1)%hw.ra.length;hw.rh=1.1}
+ hw.rt=15}
 function impRound(){hw.is='clue';hw.it=45;hw.iw=Math.floor(Math.random()*WORDS.length);hw.ii=hw.io[hw.ir%hw.io.length];hw.ires=null}
 function impStep(dt,players){hw.it-=dt;const ids=players.map(p=>p.peer);
  const clue=p=>{const c=p.e.ic;return Array.isArray(c)&&c[0]===hw.ir&&typeof c[1]==='string'&&c[1].trim()?c[1].slice(0,24):''};
@@ -459,7 +479,7 @@ function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;const t=now();
  // phase changes
  if(world.ph!==lastPh||world.ep!==lastEp){
   if(world.ph==='play'){curG=GAMES[world.g]?world.g:'conchas';curEp=world.ep}
-  if(world.ph==='play'&&joined){$('lobby').classList.remove('on');$('end').classList.remove('on');showLobbyLocal=false;if(world.ep!==lastEp){spawnMe();seenImpact=new Set();stunUntil=0;fs=[];hb=[];deadUntil=0;invUntil=0;wasDead=false;seen=new Map();got=[];bl=3;pb=[];lp=-1;sec=3;pgv=0;myQa=null;dr=[];gs=null;lastRd=-1;myIc=null;myIv=null;stopR=-1;stopPress=false;myVv=null;myMk=null;lastIr=-1;lastIs='';lastSr=-1;lastSs='';lastVr=-1;lastVs='';memKey='';lastQn=-1;snd('start')}}
+  if(world.ph==='play'&&joined){$('lobby').classList.remove('on');$('end').classList.remove('on');showLobbyLocal=false;if(world.ep!==lastEp){spawnMe();seenImpact=new Set();stunUntil=0;fs=[];hb=[];deadUntil=0;invUntil=0;wasDead=false;seen=new Map();got=[];bl=3;pb=[];lp=-1;sec=3;pgv=0;myQa=null;dr=[];gs=null;lastRd=-1;myIc=null;myIv=null;stopR=-1;stopPress=false;myVv=null;myMk=null;myRp=null;lastRs=-1;lastIr=-1;lastIs='';lastSr=-1;lastSs='';lastVr=-1;lastVs='';memKey='';lastQn=-1;snd('start')}}
   if(world.ph==='end'&&lastPh==='play'){showEnd(world);recordRank(world);snd('win')}
   lastPh=world.ph;lastEp=world.ep}
  if((world.g==='futebol'||world.g==='volei')&&(world.gs||0)!==lastGs){lastGs=world.gs||0;if(lastGs&&joined){spawnMe();snd('goal')}}
@@ -681,10 +701,10 @@ let calmKey='',dcx=$('dcv').getContext('2d'),dDrawing=false,dCur=null;
 $('cVote').onclick=()=>{myVote=myVote===curEp?-1:curEp};
 function calmTick(w,players,t){const c=$('calm');if(!c.classList.contains('on')){c.classList.add('on');calmKey=''}
  const G=GAMES[w.g];$('cTitle').textContent=G.i+' '+G.n;const v=Array.isArray(w.vn)?w.vn:[0,1];$('cVote').textContent=`🏳️ Encerrar ${+v[0]||0}/${+v[1]||1}`;$('cVote').classList.toggle('on',myVote===w.ep);
- const PAN={quiz:'quizUI',desenho:'drawUI',impostor:'impUI',stop:'stopUI',voto:'votoUI',memoria:'memUI'};for(const k in PAN)$(PAN[k]).style.display=w.g===k?'':'none';
+ const PAN={quiz:'quizUI',desenho:'drawUI',impostor:'impUI',stop:'stopUI',voto:'votoUI',memoria:'memUI',roleta:'rolUI'};for(const k in PAN)$(PAN[k]).style.display=w.g===k?'':'none';
  const arr=Object.entries(w.sc||{}).filter(e=>e[1]&&typeof e[1]==='object').sort((a,b)=>(+b[1].s||0)-(+a[1].s||0));
  const sk=JSON.stringify(arr);if(sk!==calmKey){calmKey=sk;$('cScore').innerHTML=arr.map(([k,e],i)=>`<div class="pl"><span class="dot ${e.t==='B'?'B':'A'}"></span>${i===0&&e.s>0?'👑 ':''}${esc(String(e.n))}${k===(myPeer||'me')?' <span class="me">você</span>':''}<span style="margin-left:auto">${Math.floor(+e.s||0)} pts</span></div>`).join('')}
- if(w.g==='quiz')quizUI(w,t);else if(w.g==='desenho')drawUI(w,players,t);else if(w.g==='impostor')impUI(w,players);else if(w.g==='stop')stopUI(w,players);else if(w.g==='voto')votoUI(w,players);else if(w.g==='memoria')memUI(w,players)}
+ if(w.g==='quiz')quizUI(w,t);else if(w.g==='desenho')drawUI(w,players,t);else if(w.g==='impostor')impUI(w,players);else if(w.g==='stop')stopUI(w,players);else if(w.g==='voto')votoUI(w,players);else if(w.g==='memoria')memUI(w,players);else if(w.g==='roleta')rolUI(w,players)}
 function quizUI(w,t){const qi=Array.isArray(w.qo)?w.qo[w.qn]:null;const q=QUIZ[qi];if(!q)return;$('cTime').textContent=w.qs==='ask'?Math.ceil(Math.max(0,w.qt)):'';
  if(w.qn!==lastQn){lastQn=w.qn;myQa=null;$('qNum').textContent=`Pergunta ${w.qn+1} de ${w.qo.length}`;$('qQ').textContent=q[0];$('qFb').textContent='';
   $('qOpts').innerHTML=q[1].map((o,i)=>`<button class="qo" data-i="${i}" data-q="${w.qn}">${esc(o)}</button>`).join('');
@@ -776,6 +796,20 @@ function votoUI(w,players){$('cTime').textContent=Math.ceil(Math.max(0,w.vt));co
    $('vOpts').querySelectorAll('.vo').forEach(b=>b.onclick=()=>{if(!lastWorld||lastWorld.vs!=='vote')return;myVv=[lastWorld.vr,b.dataset.p];snd('tick')})}
   else{const r=w.vres||{cnt:{},tops:[]};$('vOpts').innerHTML=players.map(p=>[p,(r.cnt||{})[p.peer]||0]).sort((a,b)=>b[1]-a[1]).map(([p,c])=>`<div class="pl">${(r.tops||[]).includes(p.peer)&&c?'👑 ':''}${esc(p.nm)}<span style="margin-left:auto">${c} voto${c===1?'':'s'}</span></div>`).join('');
    const mine=myVv&&(r.tops||[]).includes(myVv[1]);$('vFb').textContent=myVv?(mine?'✅ Você votou com a maioria: +1':'Você votou diferente da maioria.'):'Você não votou.'}}}}
+function rolUI(w,players){const ra=w.ra||[];const cur=ra[w.ri];const mine=cur===meId()&&!(w.rh>0);const alive=ra.includes(meId());
+ $('cTime').textContent=w.rh>0||ra.length<=1?'':Math.ceil(Math.max(0,w.rt));
+ const ev=String(w.rl||'');const who=ev.split(':')[1];let msg='';
+ if(ev.startsWith('splash'))msg=`<div style="font-size:3rem">💦</div><b style="font-size:1.5rem;color:#2d7fd6">SPLASH!</b><div>${esc(nameOf(players,who))} se molhou e está fora!</div>`;
+ else if(ev.startsWith('click'))msg=`<div style="font-size:2.4rem">😮‍💨</div><b>CLIQUE!</b><div>${esc(nameOf(players,who))} escapou seco.</div>`;
+ else if(ra.length<=1&&w.rw)msg=`<div style="font-size:3rem">🏆</div><b style="font-size:1.4rem">${esc(nameOf(players,w.rw))} é o último seco!</b>`;
+ else msg=`<div style="font-size:3rem">🔫</div><div>${[0,1,2,3,4,5].map(i=>`<span class="ch${i<w.rc?' used':''}${i===w.rc?' now':''}"></span>`).join('')}</div><div>${mine?'<b style="color:#e0475b">Sua vez! Coragem…</b>':`Vez de <b>${esc(nameOf(players,cur))}</b>`}</div><small style="color:#5d6f73">Chance de molhar agora: 1 em ${6-w.rc}</small>`;
+ const st=$('rStage');if(st._k!==msg){st._k=msg;st.innerHTML=msg;if(ev.startsWith('splash')){st.classList.remove('shake');void st.offsetWidth;st.classList.add('shake')}}
+ if(w.rs!==lastRs){lastRs=w.rs;if(ev.startsWith('splash')){snd('splash');if(who===meId())buzz(400)}else if(ev.startsWith('click'))snd('tick')}
+ $('rPull').style.display=mine?'':'none';
+ const ak=JSON.stringify([ra,w.ri]);if($('rAlive')._k!==ak){$('rAlive')._k=ak;const all=players.map(p=>p.peer);
+  $('rAlive').innerHTML=all.map(k=>`<div class="pl">${ra.includes(k)?'🙂':'💦'} ${esc(nameOf(players,k))}${k===meId()?' <span class="me">você</span>':''}<span style="margin-left:auto">${ra.includes(k)?(k===cur?'na vez':'seco'):'molhado'}</span></div>`).join('')}
+ if(!alive&&ra.length>1)$('rPull').style.display='none'}
+$('rPull').onclick=()=>{const lw=lastWorld;if(!lw||(lw.ra||[])[lw.ri]!==meId()||lw.rh>0)return;myRp=[lw.ep,++rpN];$('rPull').style.display='none'};
 function memUI(w,players){const cur=(w.mt||[])[w.mi];const mine=cur===meId();$('cTime').textContent=w.mh>0?'':Math.ceil(Math.max(0,w.mtt));
  $('mTurn').innerHTML=mine?'🎯 <span style="color:#ffc145">Sua vez!</span> Vire 2 cartas.':`Vez de <b>${esc(nameOf(players,cur))}</b>`;
  const key=JSON.stringify([w.mf,w.mm,mine]);if(key===memKey)return;memKey=key;

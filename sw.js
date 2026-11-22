@@ -1,5 +1,5 @@
 // Arena Porto de Galinhas: cache para abrir rápido e sem internet
-const CACHE = 'arena-pg-v1';
+const CACHE = 'arena-pg-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png',
   'https://cdn.jsdelivr.net/npm/peerjs@1/dist/peerjs.min.js'];
 self.addEventListener('install', e => {
@@ -16,7 +16,7 @@ self.addEventListener('fetch', e => {
   if (!ours) return;
   if (req.mode === 'navigate') {
     // sempre tenta a versão nova; sem internet, usa a guardada
-    e.respondWith(fetch(req).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return r; })
+    e.respondWith(fetch(req, { cache: 'no-cache' }).then(r => { const cp = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', cp)); return r; })
       .catch(() => caches.match('./index.html')));
     return;
   }
