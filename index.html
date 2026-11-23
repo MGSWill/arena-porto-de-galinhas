@@ -165,6 +165,15 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
 .btn,.tb,.chip,.vbtn,input{font-family:inherit}
 .status{margin-top:8px}
 #lobby .list{background:var(--card)}
+.rt{position:relative;padding-left:18px}.rt::before{content:'';position:absolute;left:5px;top:18px;bottom:-14px;width:2px;background:rgba(255,255,255,.12)}
+.rt .dotr{position:absolute;left:0;top:18px;width:12px;height:12px;border-radius:50%;background:var(--sol)}
+.rt.done{opacity:.55}.rt.done .dotr{background:#5ef08d}
+.rt .hd{display:flex;align-items:center;gap:10px}.rt .em{font-size:2rem}.rt .tm{font-weight:900;font-size:1.25rem;color:var(--sol)}
+.rt .tag{display:inline-block;background:#13262b;border-radius:999px;padding:4px 9px;font-size:.76rem;font-weight:800;margin:6px 6px 0 0}
+.rt ul{margin:8px 0 0 18px;padding:0;color:#dbe8ea;font-size:.88rem;line-height:1.5}
+.nextc{background:linear-gradient(135deg,#a77bff,#6a5cff);border-radius:20px;padding:16px;margin:6px 0 4px}
+.nextc .k{font-weight:800;font-size:.82rem;opacity:.9}.nextc .b{font-size:1.35rem;font-weight:900;line-height:1.2;margin-top:4px}.nextc .c{font-weight:800;margin-top:6px;font-size:.95rem}
+input[type=date],input[type=time]{color-scheme:dark}
 .pin{display:flex;flex-direction:column;align-items:center;transform:translateY(-6px)}
 .pin .b{width:34px;height:34px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .pin .l{margin-top:3px;background:rgba(19,38,43,.85);color:#fff;font-weight:800;font-size:11px;padding:2px 7px;border-radius:999px;white-space:nowrap}
@@ -210,6 +219,7 @@ textarea:focus{outline:none;border-color:var(--sol)}
         <button class="hcard sea" id="hMare"></button>
         <button class="hcard sand" id="hComer"></button>
       </div>
+      <button class="hcard" id="hNext" style="width:100%;margin-top:10px;min-height:0;background:linear-gradient(135deg,#a77bff,#6a5cff)"></button>
       <button class="hcard sky" id="hWx" style="width:100%;margin-top:10px;min-height:0;flex-direction:row;align-items:center;gap:14px"></button>
       <div class="sechead" style="margin-top:18px"><h3>Na sala agora</h3></div>
       <div id="plist" class="people"></div>
@@ -218,7 +228,7 @@ textarea:focus{outline:none;border-color:var(--sol)}
       <div class="quick">
         <button data-go="jogos"><span>🎮</span>Jogar</button>
         <button data-go="mares"><span>🌤️</span>Tempo</button>
-        <button data-go="comer"><span>🍽️</span>Comer</button>
+        <button data-go="mapa"><span>📍</span>Mapa</button>
         <button data-go="galera"><span>🎉</span>Galera</button>
       </div>
       <div class="tip" id="hTip"></div>
@@ -277,17 +287,29 @@ textarea:focus{outline:none;border-color:var(--sol)}
     </section>
 
     <section class="tabp" data-tab="passeios">
-      <div class="sechead"><h2>Passeios</h2></div>
+      <div class="sechead"><h2>Roteiro</h2><button class="pill" id="icsBtn">📅 Pôr na agenda</button></div>
+      <div class="filt" id="rtSub" style="flex-wrap:wrap;overflow:visible"><button class="on" data-s="roteiro">🗓️ Nosso roteiro</button><button data-s="precos">💰 Preços e contatos</button></div>
+      <div class="rtp" data-s="roteiro">
+        <div id="rtNext"></div>
+        <div id="rtList"></div>
+        <div class="card"><h3>➕ Adicionar ao roteiro</h3>
+          <div class="row2" style="margin-top:8px"><input id="rtD" type="date" value="2026-11-28"><input id="rtH" type="time" value="09:00"></div>
+          <input id="rtT" maxlength="40" placeholder="O quê? Ex: Jantar no Beijupirá" style="margin-top:8px">
+          <div class="acts"><button id="rtAdd" class="on">Adicionar</button></div>
+          <div class="m" style="margin-top:6px">Aparece pra galera toda.</div></div>
+      </div>
+      <div class="rtp" data-s="precos" style="display:none">
       <div class="how" style="font-size:.84rem">Valores pesquisados em guias e sites de agências (2025–2026). <b>Variam com a temporada e sempre dá pra negociar</b>, principalmente buggy e quadriciclo. Pergunte se o preço é por pessoa ou por veículo.</div>
       <div id="passList"></div>
       <p class="grp">Contatos e onde contratar</p>
       <div id="contList"></div>
       <p class="status" style="text-align:left">Contatos de empresas tirados dos sites delas e de guias de viagem. Não temos parceria com nenhuma: confira avaliações antes de fechar.</p>
+          </div>
     </section>
 
     <section class="tabp" data-tab="galera">
       <div class="sechead"><h2>Galera</h2></div>
-      <div class="filt" id="galSub"><button class="on" data-s="premios">🏅 Prêmios</button><button data-s="diario">📔 Diário</button><button data-s="playlist">🎵 Playlist</button><button data-s="mapa">📍 Mapa</button></div>
+      <div class="filt" id="galSub" style="flex-wrap:wrap;overflow:visible"><button class="on" data-s="premios">🏅 Prêmios</button><button data-s="diario">📔 Diário</button><button data-s="playlist">🎵 Playlist</button><button data-s="mapa">📍 Mapa</button></div>
       <div class="galp" data-s="premios">
         <div class="how" style="font-size:.88rem">Vote em quem merece cada prêmio da viagem. Os votos de todos ficam salvos, e no último dia vocês revelam os vencedores juntos.</div>
         <div id="pvList"></div>
@@ -351,7 +373,7 @@ textarea:focus{outline:none;border-color:var(--sol)}
     <button data-t="jogos"><span>🎮</span>Jogos</button>
     <button data-t="mares"><span>🌤️</span>Tempo</button>
     <button data-t="comer"><span>🍽️</span>Comer</button>
-    <button data-t="passeios"><span>🚤</span>Passeios</button>
+    <button data-t="passeios"><span>🗓️</span>Roteiro</button>
     <button data-t="galera"><span>🎉</span>Galera</button>
   </nav>
 </div>
@@ -371,6 +393,16 @@ textarea:focus{outline:none;border-color:var(--sol)}
 </div>
 
 <div id="rank" style="display:none"></div>
+<div class="ov" id="locAsk" style="z-index:9;align-items:center">
+  <div class="panel" style="background:#1b3239;border-radius:24px;padding:22px;text-align:center">
+    <div style="font-size:3rem">📍</div>
+    <h2 style="margin:6px 0">Mostrar onde você está?</h2>
+    <p class="sub" style="margin:0 0 6px">Assim a galera te acha no mapa durante a viagem. Sua localização só vai pra quem está na sala de vocês, e você pode desligar quando quiser em <b>Galera → Mapa</b>.</p>
+    <p class="sub" id="locAskMsg" style="color:#ffc145;margin:0"></p>
+    <button class="btn" id="locYes">Permitir localização</button>
+    <button class="btn ghost" id="locNo">Agora não</button>
+  </div>
+</div>
 <div id="calm">
   <div class="cbar"><b id="cTitle"></b><button class="vbtn" id="cVote">🏳️ Encerrar</button><span class="t" id="cTime"></span></div>
   <div id="quizUI">
@@ -452,21 +484,56 @@ let curTab='perfil',myRv='';
 const PREMIOS=['🐟 Melhor mergulhador','🦀 Mais queimado de sol','😴 Rei/Rainha do sono','📸 Fotógrafo oficial','🍤 Maior comilão','🤡 Mico da viagem','💃 Melhor no forró','⏰ Mais atrasado','🌅 Mais romântico','🧭 Mais perdido','🎮 Craque da Arena','💸 Mais gastão'];
 function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-let GAL=lsGet('gal_cache',{dy:{},pl:{},pk:{},pv:{}});let MYG=lsGet('gal_mine',{dy:{},pl:[],pk:[],pv:{}});let plN=MYG.pl.reduce((a,x)=>Math.max(a,+String(x[0]).split('_').pop()||0),0);
+let GAL=lsGet('gal_cache',{dy:{},pl:{},pk:{},pv:{}});GAL.rt=GAL.rt||{};let MYG=lsGet('gal_mine',{dy:{},pl:[],pk:[],pv:{}});let plN=MYG.pl.reduce((a,x)=>Math.max(a,+String(x[0]).split('_').pop()||0),0);
 let pvShow=false,galKey='';
 function saveMyG(){lsSet('gal_mine',MYG);mergeG(myName,MYG,true)}
-function galMine(){const dk=Object.keys(MYG.dy).sort().slice(-10);const dy={};dk.forEach(k=>dy[k]=MYG.dy[k]);return{dy,pl:MYG.pl.slice(-10),pk:MYG.pk.slice(-30),pv:MYG.pv}}
+function galMine(){const dk=Object.keys(MYG.dy).sort().slice(-10);const dy={};dk.forEach(k=>dy[k]=MYG.dy[k]);return{dy,pl:MYG.pl.slice(-10),pk:MYG.pk.slice(-30),pv:MYG.pv,rt:(MYG.rt||[]).slice(-15)}}
 function mergeG(nm,g,force){if(!nm||!g||typeof g!=='object')return false;nm=String(nm).slice(0,12);let ch=false;
  const set=(o,k,v)=>{const a=JSON.stringify(o[k]),b=JSON.stringify(v);if(a!==b){o[k]=v;ch=true}};
  if(g.dy&&typeof g.dy==='object'){const d={};for(const k in g.dy){if(/^\d{4}-\d\d-\d\d$/.test(k)&&typeof g.dy[k]==='string')d[k]=g.dy[k].slice(0,140)}set(GAL.dy,nm,Object.assign({},GAL.dy[nm]||{},d))}
  if(Array.isArray(g.pl)){for(const x of g.pl){if(Array.isArray(x)&&typeof x[0]==='string'&&typeof x[1]==='string'){const v={t:x[1].slice(0,40),a:String(x[2]||'').slice(0,30),by:nm};if(JSON.stringify(GAL.pl[x[0]])!==JSON.stringify(v)){GAL.pl[x[0]]=v;ch=true}}}
   for(const id in GAL.pl){if(GAL.pl[id].by===nm&&!g.pl.some(x=>Array.isArray(x)&&x[0]===id)){delete GAL.pl[id];ch=true}}}
  if(Array.isArray(g.pk))set(GAL.pk,nm,g.pk.filter(x=>typeof x==='string').slice(0,30));
+ if(Array.isArray(g.rt)){GAL.rt=GAL.rt||{};for(const x of g.rt){if(Array.isArray(x)&&typeof x[0]==='string'&&/^\d{4}-\d\d-\d\d$/.test(x[1])&&/^\d\d:\d\d$/.test(x[2])&&typeof x[3]==='string'){const v={d:x[1],h:x[2],t:x[3].slice(0,40),by:nm};if(JSON.stringify(GAL.rt[x[0]])!==JSON.stringify(v)){GAL.rt[x[0]]=v;ch=true}}}
+  for(const id in GAL.rt){if(GAL.rt[id].by===nm&&!g.rt.some(x=>Array.isArray(x)&&x[0]===id)){delete GAL.rt[id];ch=true}}}
  if(g.pv&&typeof g.pv==='object'){const v={};for(const k in g.pv){if(typeof g.pv[k]==='string')v[k]=g.pv[k].slice(0,12)}set(GAL.pv,nm,v)}
  if(ch)lsSet('gal_cache',GAL);return ch}
 function syncGal(){let ch=false;if(joined)ch=mergeG(myName,galMine())||ch;const ps=room?room.peers():[];for(const p of ps){if(p.sameTab)continue;const pr=p.presence||{};if(typeof pr.nm==='string'&&pr.gl)ch=mergeG(pr.nm,pr.gl)||ch}return ch}
 function knownNames(){const s2=new Set();Object.keys(GAL.dy).concat(Object.keys(GAL.pk),Object.keys(GAL.pv)).forEach(n=>s2.add(n));(room?room.peers():[]).forEach(p=>{const n=p.sameTab?(joined?myName:''):p.presence&&p.presence.nm;if(n)s2.add(String(n).slice(0,12))});if(joined)s2.add(myName);return[...s2].filter(Boolean)}
 let galSub='premios';
+// ---- Roteiro ----
+const ROT=[
+ {id:'r1',d:'2026-11-24',h:'07:40',t:'Ilha de Santo Aleixo',em:'🏝️',tips:['Roupa de banho por baixo, toalha e chinelo','Protetor solar e boné','Dinheiro ou Pix pro consumo no barco e na ilha','Celular em capinha à prova d’água']},
+ {id:'r2',d:'2026-11-25',h:'05:30',t:'Maragogi · catamarã',em:'⛵',tips:['Saída bem cedo: durmam cedo na terça e deixem a bolsa pronta','Levem um lanche pra estrada','Quem enjoa: remédio pra enjoo antes de embarcar','Protetor, óculos de sol e dinheiro pras taxas e o consumo']},
+ {id:'r3',d:'2026-11-26',h:'07:40',t:'Praia dos Carneiros · catamarã',em:'⛪',tips:['Protetor solar e chapéu (pouca sombra no mar)','Dinheiro pras barracas','Foto clássica: a igrejinha de São Benedito na beira da praia']},
+ {id:'r4',d:'2026-11-27',h:'10:30',t:'Mergulho com cilindro',em:'🤿',tips:['Nada de bebida alcoólica na noite anterior e café da manhã leve','Avise o instrutor se tiver gripe, ouvido entupido ou algum problema de saúde','Evitem voar de avião nas 24 horas depois do mergulho','Câmera à prova d’água, se tiver']},
+ {id:'r5',d:'2026-11-28',h:'08:00',t:'Passeio de buggy',em:'🏎️',tips:['Óculos de sol e boné (venta e levanta areia)','Roupa de banho por baixo: tem paradas nas praias','Protetor solar e água','Dinheiro ou Pix pras paradas']},
+ {id:'r6',d:'2026-11-28',h:'12:00',tbd:1,t:'Quadriciclo (depois do buggy)',em:'🏍️',note:'Horário a confirmar com o Luiz',tips:['Confirmar o horário com o Luiz','Roupa que pode sujar de lama e areia','Óculos de sol e protetor','Calçado fechado ou chinelo bem preso']}];
+let rtSub='roteiro';
+function allRot(){const extra=Object.entries(GAL.rt||{}).map(([id,v])=>({id,d:v.d,h:v.h,t:v.t,em:'📌',by:v.by,tips:[]}));return ROT.concat(extra).sort((a,b)=>(a.d+a.h).localeCompare(b.d+b.h))}
+function rtWhen(it){return new Date(it.d+'T'+it.h+':00-03:00')}
+function rtRel(it){const now2=new Date();const dd=new Date(it.d+'T12:00:00');const today=ymd(now2);const tm=ymd(new Date(now2.getTime()+864e5));if(it.d===today)return'Hoje';if(it.d===tm)return'Amanhã';return DIAS[dd.getDay()]+' '+dd.getDate()+'/'+(dd.getMonth()+1)}
+function nextRot(){const now2=Date.now();return allRot().find(it=>rtWhen(it).getTime()>now2-2*3600e3&&!(MYG.rd||[]).includes(it.id))}
+function falta(it){if(it.tbd)return'horário a confirmar';const ms=rtWhen(it)-Date.now();if(ms<=0)return'Agora! 🎉';const h=Math.floor(ms/3600e3),m=Math.floor(ms%3600e3/60000);return h>=24?'Faltam '+Math.floor(h/24)+'d '+(h%24)+'h':'Faltam '+h+'h '+m+'min'}
+function dayWx(d){if(!WX||!WX.j||!WX.j.daily)return'';const i=WX.j.daily.time.indexOf(d);if(i<0)return'';const w=wxInfo(WX.j.daily.weather_code[i]);return`<span class="tag">${w[0]} ${Math.round(WX.j.daily.temperature_2m_max[i])}° · 💧${WX.j.daily.precipitation_probability_max[i]||0}%</span>`}
+function dayTide(d){const m=MARES[d];if(!m)return'';const lo=bestLow(m);return lo?`<span class="tag">🌊 maré baixa ${lo[0]} · ${lo[1].toFixed(1)} m</span>`:''}
+function renderRoteiro(){const items=allRot();const nx=nextRot();MYG.rd=MYG.rd||[];
+ $('rtNext').innerHTML=nx?`<div class="nextc"><div class="k">PRÓXIMO PASSEIO</div><div class="b">${nx.em} ${esc(nx.t)}</div><div class="c">${rtRel(nx)}${nx.tbd?'':' às '+nx.h} · ${falta(nx)}</div></div>`:'';
+ $('rtList').innerHTML=items.map(it=>{const done=MYG.rd.includes(it.id);return`<div class="card rt${done?' done':''}"><span class="dotr"></span><div class="hd"><span class="em">${it.em}</span><div style="flex:1"><div class="m" style="font-weight:800">${rtRel(it)}</div><h3 style="margin:0">${esc(it.t)}</h3></div><span class="tm"${it.tbd?' style="font-size:.85rem;text-align:right"':''}>${it.tbd?'⏳ a<br>confirmar':it.h}</span></div>${it.note?`<div class="m" style="margin-top:6px;color:#ffc145;font-weight:800">⚠️ ${esc(it.note)}</div>`:''}
+  <div>${it.by?'':dayTide(it.d)}${dayWx(it.d)}${it.by?`<span class="tag">por ${esc(it.by)}</span>`:''}</div>${it.tips.length?`<ul>${it.tips.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
+  <div class="acts"><button data-rd="${it.id}" class="${done?'on':''}">${done?'✅ Feito':'☐ Marcar como feito'}</button>${it.by===myName?`<button data-rrm="${it.id}">🗑️</button>`:''}</div></div>`}).join('');
+ $('rtList').querySelectorAll('[data-rd]').forEach(b=>b.onclick=()=>{const id=b.dataset.rd;MYG.rd=MYG.rd.includes(id)?MYG.rd.filter(x=>x!==id):[...MYG.rd,id];saveMyG();snd('tick');renderRoteiro()});
+ $('rtList').querySelectorAll('[data-rrm]').forEach(b=>b.onclick=()=>{MYG.rt=(MYG.rt||[]).filter(x=>x[0]!==b.dataset.rrm);delete GAL.rt[b.dataset.rrm];lsSet('gal_cache',GAL);saveMyG();renderRoteiro()})}
+document.querySelectorAll('#rtSub button').forEach(b=>b.onclick=()=>{rtSub=b.dataset.s;document.querySelectorAll('#rtSub button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.rtp').forEach(x=>x.style.display=x.dataset.s===rtSub?'':'none');if(rtSub==='precos')renderPasseios();else renderRoteiro()});
+$('rtAdd').onclick=()=>{if(!joined){setTab('perfil');return}const d=$('rtD').value,h=$('rtH').value,t2=$('rtT').value.trim();if(!d||!h||!t2)return;MYG.rt=MYG.rt||[];if(MYG.rt.length>=15)return;
+ const id='x'+myName.replace(/[^A-Za-z0-9]/g,'').slice(0,6)+Date.now().toString(36);MYG.rt.push([id,d,h,t2.slice(0,40)]);saveMyG();$('rtT').value='';snd('pick');renderRoteiro()};
+function icsDownload(){const pad=n=>String(n).padStart(2,'0');const z=dt=>dt.getUTCFullYear()+pad(dt.getUTCMonth()+1)+pad(dt.getUTCDate())+'T'+pad(dt.getUTCHours())+pad(dt.getUTCMinutes())+'00Z';
+ const L2=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//PortoPG//Roteiro//PT','CALSCALE:GREGORIAN'];
+ for(const it of allRot()){const st=rtWhen(it),en=new Date(st.getTime()+2*3600e3);L2.push('BEGIN:VEVENT','UID:'+it.id+'@portopg','DTSTAMP:'+z(new Date()),'DTSTART:'+z(st),'DTEND:'+z(en),'SUMMARY:'+it.em+' '+it.t.replace(/[,;]/g,' ')+(it.tbd?' (horário a confirmar)':''),'DESCRIPTION:'+(it.tips.join(' · ')||'Roteiro da galera').replace(/[,;]/g,' '),
+  'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+it.t.replace(/[,;]/g,' '),'TRIGGER:-PT60M','END:VALARM');
+  if(+it.h.slice(0,2)<8)L2.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Amanhã cedo: '+it.t.replace(/[,;]/g,' ')+' às '+it.h,'TRIGGER:-PT9H','END:VALARM');L2.push('END:VEVENT')}
+ L2.push('END:VCALENDAR');const blob=new Blob([L2.join('\r\n')],{type:'text/calendar'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roteiro-porto-de-galinhas.ics';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+$('icsBtn').onclick=icsDownload;
 // ---- Localização ao vivo ----
 let shareLoc=lsGet('share_loc',false),myLoc=null,geoW=null,LOCS=lsGet('locs_cache',{}),map=null,mapMk={},mapFit=false,leafLoading=false;
 function startGeo(){if(!('geolocation' in navigator)){$('locMsg').textContent='Este navegador não tem localização.';return}
@@ -474,7 +541,7 @@ function startGeo(){if(!('geolocation' in navigator)){$('locMsg').textContent='E
   err=>{$('locMsg').textContent=err.code===1?'Permissão negada. Libere a localização pro navegador nos Ajustes do celular.':'Não consegui pegar a localização agora. Tentando de novo…'},{enableHighAccuracy:true,maximumAge:15000,timeout:20000})}
 function stopGeo(){if(geoW!=null){try{navigator.geolocation.clearWatch(geoW)}catch(e){}geoW=null}myLoc=null}
 function renderLocBtn(){$('locBtn').textContent=shareLoc?'⏸️ Parar de compartilhar':'📍 Compartilhar minha localização';$('locBtn').classList.toggle('on',!shareLoc);if(!shareLoc)$('locMsg').textContent='Você não está compartilhando.'}
-$('locBtn').onclick=()=>{if(!joined){setTab('perfil');return}shareLoc=!shareLoc;lsSet('share_loc',shareLoc);if(shareLoc)startGeo();else{stopGeo();if(LOCS[myName]){delete LOCS[myName];lsSet('locs_cache',LOCS)}}renderLocBtn();renderMap()};
+$('locBtn').onclick=()=>{if(!joined){setTab('perfil');return}if(!shareLoc){askLocation(true);return}shareLoc=!shareLoc;lsSet('share_loc',shareLoc);if(shareLoc)startGeo();else{stopGeo();if(LOCS[myName]){delete LOCS[myName];lsSet('locs_cache',LOCS)}}renderLocBtn();renderMap()};
 function loadLeaflet(cb){if(window.L){cb();return}if(leafLoading)return;leafLoading=true;const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(l);
  const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=()=>{leafLoading=false;cb()};sc.onerror=()=>{leafLoading=false;$('mapBox').innerHTML='<p class="status" style="padding:20px">Não consegui carregar o mapa (sem internet?).</p>'};document.head.appendChild(sc)}
 function syncLocs(){let ch=false;for(const p of (room?room.peers():[])){if(p.sameTab)continue;const pr=p.presence||{};const lo=pr.e&&pr.e.lo;if(typeof pr.nm==='string'&&Array.isArray(lo)&&lo.length===4&&lo.every(v=>typeof v==='number')){const n=pr.nm.slice(0,12);if(!LOCS[n]||LOCS[n][3]!==lo[3]){LOCS[n]=lo;ch=true}}}if(ch)lsSet('locs_cache',LOCS);return ch}
@@ -495,6 +562,12 @@ function renderMap(){if(galSub!=='mapa'||curTab!=='galera')return;syncLocs();if(
 function fitAll(){if(!map)return;const pts=Object.values(mapMk).map(m=>m.getLatLng());if(pts.length===1)map.setView(pts[0],16);else if(pts.length)map.fitBounds(L.latLngBounds(pts).pad(.3))}
 $('mapAll').onclick=fitAll;$('mapMe').onclick=()=>{if(map&&myLoc)map.setView([myLoc[0],myLoc[1]],17);else if(!shareLoc)$('locMsg').textContent='Ative o compartilhamento pra se ver no mapa.'};
 renderLocBtn();if(shareLoc)setTimeout(startGeo,1500);
+function askLocation(force){if(!('geolocation' in navigator))return;if(shareLoc&&!force)return;if(!force&&lsGet('loc_asked',false))return;$('locAskMsg').textContent='';$('locAsk').classList.add('on')}
+$('locNo').onclick=()=>{lsSet('loc_asked',true);$('locAsk').classList.remove('on')};
+$('locYes').onclick=()=>{lsSet('loc_asked',true);$('locAskMsg').textContent='Aguardando a permissão do celular…';
+ navigator.geolocation.getCurrentPosition(pos=>{shareLoc=true;lsSet('share_loc',true);myLoc=[+pos.coords.latitude.toFixed(5),+pos.coords.longitude.toFixed(5),Math.round(pos.coords.accuracy||0),Date.now()];if(joined){LOCS[myName]=myLoc;lsSet('locs_cache',LOCS)}startGeo();renderLocBtn();$('locAsk').classList.remove('on');snd('pick');if(curTab==='galera')renderMap()},
+  err=>{$('locAskMsg').innerHTML=err.code===1?'A permissão foi negada. No iPhone: <b>Ajustes → Privacidade e Segurança → Serviços de Localização → Safari → Ao Usar o App</b>. Depois toque em Permitir de novo.':'Não consegui pegar a localização agora. Confira se o GPS está ligado e tente de novo.'},{enableHighAccuracy:true,timeout:20000,maximumAge:0})};
+function maybeAskLoc(){if(joined&&!shareLoc&&!lsGet('loc_asked',false))setTimeout(()=>askLocation(false),900)}
 let wakeOn=false,wakeLock=null;
 async function getWake(){try{if(!('wakeLock' in navigator))return false;wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null});return true}catch(e){return false}}
 function renderWake(){$('wakeBtn').textContent=wakeOn?'💡 Tela ligada ✓ (tocar pra desligar)':'💡 Manter tela ligada';$('wakeBtn').classList.toggle('on',wakeOn)}
@@ -557,10 +630,12 @@ function renderHome(players){players=players||[];const now2=new Date();const h=n
  const c=voteCounts();const top=Object.entries(c).sort((a,b)=>b[1].length-a[1].length)[0];const r=top&&COMER.find(x=>x[0]===top[0]);
  $('hComer').innerHTML=`<span class="lab">🍽️ Onde comer</span><span class="big">${r?esc(r[1]):'Vote!'}</span><span class="sm">${r?top[1].length+' voto'+(top[1].length>1?'s':''):'Ninguém votou ainda'}</span>`;
  if(WX&&WX.j&&WX.j.current){const c=WX.j.current,d=WX.j.daily;const ic=wxInfo(c.weather_code);$('hWx').innerHTML=`<span class="em">${ic[0]}</span><span><span class="t">${Math.round(c.temperature_2m)}°</span><span class="sm" style="display:block">${ic[1]} · pôr do sol ${hm(d.sunset[0])} · UV ${d.uv_index_max?Math.round(d.uv_index_max[0]):'—'}</span></span>`}else $('hWx').innerHTML='<span class="em">🌤️</span><span><span class="lab">Clima</span><span class="sm" style="display:block">Toque pra ver a previsão</span></span>';
+ {const nx=nextRot();$('hNext').style.display=nx?'':'none';if(nx)$('hNext').innerHTML=`<span class="lab">🗓️ Próximo passeio</span><span class="big">${nx.em} ${esc(nx.t)}</span><span class="sm">${rtRel(nx)}${nx.tbd?'':' às '+nx.h} · ${falta(nx)}</span>`}
  $('hTip').innerHTML=`<b>💡 Dica do dia</b><br>${esc(TIPS[(now2.getDate()+now2.getMonth())%TIPS.length])}`;
  $('avatarBtn').textContent=joined&&myName?myName.charAt(0).toUpperCase():'👤'}
-$('hMare').onclick=()=>setTab('mares');$('hWx').onclick=()=>setTab('mares');$('hComer').onclick=()=>setTab('comer');
-document.querySelectorAll('.quick [data-go]').forEach(b=>b.onclick=()=>setTab(b.dataset.go));
+$('hMare').onclick=()=>setTab('mares');$('hNext').onclick=()=>setTab('passeios');$('hWx').onclick=()=>setTab('mares');$('hComer').onclick=()=>setTab('comer');
+document.querySelectorAll('.quick [data-go]').forEach(b=>b.onclick=()=>{if(b.dataset.go==='mapa'){openMapa()}else setTab(b.dataset.go)});
+function openMapa(){setTab('galera');const b=document.querySelector('#galSub [data-s="mapa"]');if(b)b.click()}
 $('avatarBtn').onclick=()=>setTab('perfil');$('goRank').onclick=()=>setTab('ranking');$('backJogos').onclick=()=>setTab('jogos');
 document.querySelectorAll('#filt button').forEach(b=>b.onclick=()=>{const f=b.dataset.f;document.querySelectorAll('#filt button').forEach(x=>x.classList.toggle('on',x===b));
  document.querySelectorAll('#games .gc').forEach(g=>{g.style.display=f==='all'||g.dataset.cat===f?'':'none'});document.querySelectorAll('#games .grp').forEach(g=>g.style.display=f==='all'?'':'none')});
@@ -625,7 +700,7 @@ const CONT=[
  ['MarIA · assistente oficial do destino','Assistente do Porto de Galinhas Convention & Visitors Bureau, que responde 24h no WhatsApp. Ela indica passeios, restaurantes e serviços cadastrados.',[['📷 @portodegalinhas','https://www.instagram.com/portodegalinhas/']]]];
 function renderPasseios(){$('passList').innerHTML=PASS.map(p=>`<div class="card"><h3>${p[0]} ${esc(p[1])}</h3><div class="pr">${esc(p[2])}</div><div class="m" style="margin-top:4px">${esc(p[3])}</div></div>`).join('');
  $('contList').innerHTML=CONT.map(c=>`<div class="card"><h3>${esc(c[0])}</h3><div class="m">${esc(c[1])}</div>${c[2].length?`<div class="acts">${c[2].map(a=>`<a href="${a[1]}" target="_blank" rel="noopener">${esc(a[0])}</a>`).join('')}</div>`:''}</div>`).join('')}
-function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));const tb=t==='ranking'?'jogos':t;document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===tb));if(t==='ranking')showRank();if(t==='inicio')renderHome(peersList());if(t==='mares'){renderMares();loadWx(false)}if(t==='galera'){renderGal(true);if(galSub==='mapa')renderMap()}if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
+function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));const tb=t==='ranking'?'jogos':t;document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===tb));if(t==='ranking')showRank();if(t==='inicio')renderHome(peersList());if(t==='mares'){renderMares();loadWx(false)}if(t==='galera'){renderGal(true);if(galSub==='mapa')renderMap()}if(t==='comer')renderComer(true);if(t==='passeios'){if(rtSub==='precos')renderPasseios();else renderRoteiro()}try{$('lobby').scrollTop=0}catch(e){}}
 document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 function renderAc(){$('acs').innerHTML=ACS.map((a,i)=>`<button class="chip${i===myAc?' on':''}" data-i="${i}">${a}</button>`).join('');
  $('acs').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{myAc=+b.dataset.i;saveMe();renderAc()});
@@ -636,7 +711,7 @@ function pick(t){myTeam=t;document.querySelectorAll('.tb').forEach(b=>b.classLis
 document.querySelectorAll('.tb').forEach(b=>b.onclick=()=>pick(b.dataset.t));
 $('join').onclick=()=>{const n=$('nm').value.trim();if(!n){$('nm').focus();return}if(!myTeam){pick(Math.random()<.5?'A':'B')}
  myName=n.slice(0,12);joined=true;saveMe();
- spawnMe();renderLobby();setTab('inicio')};
+ spawnMe();renderLobby();setTab('inicio');maybeAskLoc()};
 $('goPerfil').onclick=()=>setTab('perfil');
 document.querySelectorAll('.gc').forEach(b=>b.onclick=()=>{gp=b.dataset.g;goCount++});
 $('joinPlay').onclick=()=>{$('lobby').classList.remove('on');showLobbyLocal=false};
@@ -977,7 +1052,7 @@ function rp(p){if(p.me)return pos;let r=rpos[p.peer];if(!r){r=rpos[p.peer]={x:p.
 
 // ---------- lobby / end ----------
 let lobT=0;
-function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();if(curTab==='galera'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')renderGal();else if(lobT===.3&&Math.random()<.2)syncGal();
+function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();if(curTab==='passeios'&&rtSub==='roteiro'&&document.activeElement.tagName!=='INPUT'&&Math.random()<.1)renderRoteiro();if(curTab==='galera'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')renderGal();else if(lobT===.3&&Math.random()<.2)syncGal();
  const plk=JSON.stringify(players.map(p=>[p.nm,p.tm,p.me]));if($('plist')._k!==plk){$('plist')._k=plk;$('plist').innerHTML=players.length?players.map(p=>`<div class="pl"><span class="dot ${p.tm}"></span>${esc(p.nm)}${p.me?' <span class="me">você</span>':''}</div>`).join(''):'<div class="pl" style="color:#b9cfd3">Ninguém ainda</div>'}
  if(curTab==='inicio')renderHome(players);
  const inPlay=world.ph==='play';$('games').style.display=!inPlay?'block':'none';$('needProfile').style.display=joined||curTab==='perfil'?'none':'block';document.querySelectorAll('.gc').forEach(b=>b.disabled=!joined);$('joinPlay').style.display=joined&&inPlay?'block':'none';
