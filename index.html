@@ -302,10 +302,13 @@ textarea:focus{outline:none;border-color:var(--sol)}
       </div>
       <div class="galp" data-s="mapa" style="display:none">
         <div class="card"><h3>📍 Onde está a galera</h3><div class="m">Cada um escolhe se compartilha a localização. Ela só vai pra quem está na sala de vocês e só atualiza com o app aberto.</div>
-          <div class="acts"><button id="locBtn">📍 Compartilhar minha localização</button></div><div class="m" id="locMsg" style="margin-top:6px"></div></div>
+          <div class="acts"><button id="locBtn">📍 Compartilhar minha localização</button><button id="wakeBtn">💡 Manter tela ligada</button></div><div class="m" id="locMsg" style="margin-top:6px"></div></div>
         <div id="mapBox" style="height:52vh;min-height:300px;border-radius:18px;overflow:hidden;margin-top:10px;background:#16282d"></div>
         <div class="acts" style="margin-top:10px"><button class="pill" id="mapAll">👥 Ver todos</button><button class="pill" id="mapMe">🎯 Eu</button></div>
         <div id="locList"></div>
+        <div class="card"><h3>🛰️ Localização mesmo com o app fechado</h3><div class="m">Navegadores pausam a localização em segundo plano. Pra acompanhar sempre (por exemplo, quando cada casal vai pra um lado), usem o Google Maps:<br>1. Abra o Google Maps e toque na sua <b>foto de perfil</b>.<br>2. Toque em <b>Compartilhar localização</b>.<br>3. Escolha a duração (ex.: <b>Até você desativar</b>) e os 3 amigos.<br>Funciona entre iPhone e Android, e dá pra desligar quando quiser.</div>
+          <div class="acts"><a href="https://www.google.com/maps" target="_blank" rel="noopener">🗺️ Abrir Google Maps</a></div>
+          <div class="m" style="margin-top:8px">Alternativa: no grupo do WhatsApp, 📎 → Localização → <b>Localização em tempo real</b> → 8 horas.</div></div>
         <p class="status" style="text-align:left">Mapa © colaboradores do OpenStreetMap.</p>
       </div>
       <div class="galp" data-s="playlist" style="display:none">
@@ -492,6 +495,13 @@ function renderMap(){if(galSub!=='mapa'||curTab!=='galera')return;syncLocs();if(
 function fitAll(){if(!map)return;const pts=Object.values(mapMk).map(m=>m.getLatLng());if(pts.length===1)map.setView(pts[0],16);else if(pts.length)map.fitBounds(L.latLngBounds(pts).pad(.3))}
 $('mapAll').onclick=fitAll;$('mapMe').onclick=()=>{if(map&&myLoc)map.setView([myLoc[0],myLoc[1]],17);else if(!shareLoc)$('locMsg').textContent='Ative o compartilhamento pra se ver no mapa.'};
 renderLocBtn();if(shareLoc)setTimeout(startGeo,1500);
+let wakeOn=false,wakeLock=null;
+async function getWake(){try{if(!('wakeLock' in navigator))return false;wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null});return true}catch(e){return false}}
+function renderWake(){$('wakeBtn').textContent=wakeOn?'💡 Tela ligada ✓ (tocar pra desligar)':'💡 Manter tela ligada';$('wakeBtn').classList.toggle('on',wakeOn)}
+$('wakeBtn').onclick=async()=>{if(wakeOn){wakeOn=false;try{wakeLock&&wakeLock.release()}catch(e){}wakeLock=null;renderWake();return}
+ const ok=await getWake();if(ok){wakeOn=true;$('locMsg').textContent='A tela não vai apagar sozinha enquanto o app estiver aberto (gasta mais bateria).'}else $('locMsg').textContent='Este navegador não deixa manter a tela ligada. No iPhone, precisa do iOS 16.4 ou mais novo.';renderWake()};
+document.addEventListener('visibilitychange',()=>{if(wakeOn&&document.visibilityState==='visible'&&!wakeLock)getWake()});
+renderWake();
 let mapT=0;setInterval(()=>{if(galSub==='mapa'&&curTab==='galera'&&$('lobby').classList.contains('on'))renderMap();else syncLocs()},5000);
 document.querySelectorAll('#galSub button').forEach(b=>b.onclick=()=>{galSub=b.dataset.s;document.querySelectorAll('#galSub button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.galp').forEach(x=>x.style.display=x.dataset.s===galSub?'':'none');galKey='';renderGal(true);if(galSub==='mapa')renderMap()});
 function renderGal(force){syncGal();const key=JSON.stringify([GAL,MYG,pvShow,galSub,knownNames()]);if(!force&&key===galKey)return;galKey=key;
