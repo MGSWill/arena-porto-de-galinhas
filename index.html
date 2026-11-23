@@ -165,6 +165,27 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
 .btn,.tb,.chip,.vbtn,input{font-family:inherit}
 .status{margin-top:8px}
 #lobby .list{background:var(--card)}
+.pin{display:flex;flex-direction:column;align-items:center;transform:translateY(-6px)}
+.pin .b{width:34px;height:34px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.pin .l{margin-top:3px;background:rgba(19,38,43,.85);color:#fff;font-weight:800;font-size:11px;padding:2px 7px;border-radius:999px;white-space:nowrap}
+.pin.old .b{opacity:.55}
+.leaflet-container{font-family:inherit}
+.hcard.sky{background:linear-gradient(120deg,#ff9a5a,#ff6f8e 55%,#7b6cff)}
+.hcard.sky .em{font-size:2.6rem;line-height:1}.hcard.sky .t{font-size:1.9rem;font-weight:900;line-height:1}
+.wxnow{display:flex;align-items:center;gap:14px;background:linear-gradient(150deg,#2d9cdb,#1565a6);border-radius:20px;padding:16px;margin-top:6px}
+.wxnow .em{font-size:3.4rem;line-height:1}.wxnow .t{font-size:2.6rem;font-weight:900;line-height:1}.wxnow .m{color:#e6f4ff;font-weight:700;font-size:.9rem;line-height:1.45}
+.sunrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.sunrow div{background:var(--card);border-radius:16px;padding:10px;text-align:center;font-weight:800;font-size:.8rem;color:#cfe0e3}.sunrow b{display:block;font-size:1.15rem;color:#fff;margin-top:2px}
+.days{display:flex;gap:8px;overflow-x:auto;margin-top:10px;padding-bottom:4px;scrollbar-width:none}
+.days div{flex:none;width:74px;background:var(--card);border-radius:16px;padding:10px 6px;text-align:center;font-weight:800;font-size:.8rem}
+.days .em{font-size:1.6rem;display:block;margin:4px 0}.days .rn{color:#7fd3ff;font-size:.72rem}
+textarea{width:100%;margin-top:10px;padding:12px;border-radius:14px;border:2px solid transparent;background:#13262b;color:#fff;font-size:1rem;font-family:inherit;resize:none;user-select:text;-webkit-user-select:text}
+textarea:focus{outline:none;border-color:var(--sol)}
+.pvc .chips{margin-top:8px}.pvc .chip{padding:7px 11px;font-size:.85rem}
+.win2{display:flex;align-items:center;gap:10px}.win2 .tro{font-size:1.8rem}
+.dyd{margin-top:14px}.dyd h4{margin:0 0 6px;color:var(--sol);font-size:.95rem}
+.dye{background:var(--card);border-radius:14px;padding:10px 12px;margin-top:6px;line-height:1.45}.dye b{color:#fff}.dye span{color:#dbe8ea}
+.plr{display:flex;align-items:center;gap:10px}.plr .n{font-weight:900;font-size:1.3rem;color:var(--sol);width:26px;text-align:center}
 </style>
 </head>
 <body>
@@ -189,15 +210,16 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
         <button class="hcard sea" id="hMare"></button>
         <button class="hcard sand" id="hComer"></button>
       </div>
+      <button class="hcard sky" id="hWx" style="width:100%;margin-top:10px;min-height:0;flex-direction:row;align-items:center;gap:14px"></button>
       <div class="sechead" style="margin-top:18px"><h3>Na sala agora</h3></div>
       <div id="plist" class="people"></div>
       <p class="status" id="status">Conectando…</p>
       <div class="sechead" style="margin-top:14px"><h3>Atalhos</h3></div>
       <div class="quick">
         <button data-go="jogos"><span>🎮</span>Jogar</button>
-        <button data-go="mares"><span>🌊</span>Marés</button>
+        <button data-go="mares"><span>🌤️</span>Tempo</button>
         <button data-go="comer"><span>🍽️</span>Comer</button>
-        <button data-go="passeios"><span>🚤</span>Passeios</button>
+        <button data-go="galera"><span>🎉</span>Galera</button>
       </div>
       <div class="tip" id="hTip"></div>
     </section>
@@ -235,7 +257,12 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
     </section>
 
     <section class="tabp" data-tab="mares">
-      <div class="sechead"><h2>Marés</h2></div>
+      <div class="sechead"><h2>Tempo</h2><button class="pill" id="wxRefresh">🔄 Atualizar</button></div>
+      <div id="wxNow"></div>
+      <div id="wxSun"></div>
+      <div id="wxDays" class="days"></div>
+      <p class="status" id="wxSrc" style="text-align:left"></p>
+      <div class="sechead" style="margin-top:6px"><h2 style="font-size:1.3rem">Marés</h2></div>
       <div id="mareHoje"></div>
       <div class="how" style="font-size:.84rem"><b>Regra das piscinas naturais:</b> o passeio de jangada só vale com <b>maré baixa de 0.5 m ou menos</b>, de dia. De 0.0 a 0.3 é perfeito. A partir de 0.6, não vale a pena. Vá no horário da maré baixa ou até 1 hora antes.</div>
       <div id="mareList"></div>
@@ -256,6 +283,39 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
       <p class="grp">Contatos e onde contratar</p>
       <div id="contList"></div>
       <p class="status" style="text-align:left">Contatos de empresas tirados dos sites delas e de guias de viagem. Não temos parceria com nenhuma: confira avaliações antes de fechar.</p>
+    </section>
+
+    <section class="tabp" data-tab="galera">
+      <div class="sechead"><h2>Galera</h2></div>
+      <div class="filt" id="galSub"><button class="on" data-s="premios">🏅 Prêmios</button><button data-s="diario">📔 Diário</button><button data-s="playlist">🎵 Playlist</button><button data-s="mapa">📍 Mapa</button></div>
+      <div class="galp" data-s="premios">
+        <div class="how" style="font-size:.88rem">Vote em quem merece cada prêmio da viagem. Os votos de todos ficam salvos, e no último dia vocês revelam os vencedores juntos.</div>
+        <div id="pvList"></div>
+        <button class="btn" id="pvReveal">🎉 Revelar vencedores</button>
+        <div id="pvRes"></div>
+      </div>
+      <div class="galp" data-s="diario" style="display:none">
+        <div class="card"><h3 id="dyTitle">Meu momento de hoje</h3><div class="m">Uma frase sobre o melhor momento do dia. Na volta, vocês leem todos juntos.</div>
+          <textarea id="dyIn" maxlength="140" rows="3" placeholder="Ex: o peixinho que mordeu o dedo da Ana 😂"></textarea>
+          <div class="acts"><button id="dySave" class="on">Salvar</button><span class="m" id="dyCount"></span></div></div>
+        <div id="dyList"></div>
+      </div>
+      <div class="galp" data-s="mapa" style="display:none">
+        <div class="card"><h3>📍 Onde está a galera</h3><div class="m">Cada um escolhe se compartilha a localização. Ela só vai pra quem está na sala de vocês e só atualiza com o app aberto.</div>
+          <div class="acts"><button id="locBtn">📍 Compartilhar minha localização</button></div><div class="m" id="locMsg" style="margin-top:6px"></div></div>
+        <div id="mapBox" style="height:52vh;min-height:300px;border-radius:18px;overflow:hidden;margin-top:10px;background:#16282d"></div>
+        <div class="acts" style="margin-top:10px"><button class="pill" id="mapAll">👥 Ver todos</button><button class="pill" id="mapMe">🎯 Eu</button></div>
+        <div id="locList"></div>
+        <p class="status" style="text-align:left">Mapa © colaboradores do OpenStreetMap.</p>
+      </div>
+      <div class="galp" data-s="playlist" style="display:none">
+        <div class="card"><h3>Sugerir música</h3>
+          <input id="plT" maxlength="40" placeholder="Nome da música">
+          <input id="plA" maxlength="30" placeholder="Artista" style="margin-top:8px">
+          <div class="acts"><button id="plAdd" class="on">➕ Adicionar</button></div></div>
+        <div id="plList"></div>
+        <p class="status" style="text-align:left">Os botões abrem a busca no Spotify ou no YouTube. Pra tocar, montem a playlist num dos dois apps com as mais votadas.</p>
+      </div>
     </section>
 
     <section class="tabp" data-tab="perfil">
@@ -286,9 +346,10 @@ html,body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-se
   <nav class="tabbar" id="tabbar">
     <button data-t="inicio"><span>🏠</span>Início</button>
     <button data-t="jogos"><span>🎮</span>Jogos</button>
-    <button data-t="mares"><span>🌊</span>Marés</button>
+    <button data-t="mares"><span>🌤️</span>Tempo</button>
     <button data-t="comer"><span>🍽️</span>Comer</button>
     <button data-t="passeios"><span>🚤</span>Passeios</button>
+    <button data-t="galera"><span>🎉</span>Galera</button>
   </nav>
 </div>
 <span id="rankBtn" style="display:none"></span><span id="rkClose" style="display:none"></span>
@@ -384,6 +445,98 @@ try{const s=JSON.parse(localStorage.getItem('gdc')||'{}');if(s.n)$('nm').value=s
 renderAc();
 setTimeout(()=>{if($('nm').value.trim()&&myTeam){$('join').onclick()}else setTab('perfil')},50);
 let curTab='perfil',myRv='';
+// ---- Galera: dados compartilhados (salvos em cada celular e trocados pela sala) ----
+const PREMIOS=['🐟 Melhor mergulhador','🦀 Mais queimado de sol','😴 Rei/Rainha do sono','📸 Fotógrafo oficial','🍤 Maior comilão','🤡 Mico da viagem','💃 Melhor no forró','⏰ Mais atrasado','🌅 Mais romântico','🧭 Mais perdido','🎮 Craque da Arena','💸 Mais gastão'];
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let GAL=lsGet('gal_cache',{dy:{},pl:{},pk:{},pv:{}});let MYG=lsGet('gal_mine',{dy:{},pl:[],pk:[],pv:{}});let plN=MYG.pl.reduce((a,x)=>Math.max(a,+String(x[0]).split('_').pop()||0),0);
+let pvShow=false,galKey='';
+function saveMyG(){lsSet('gal_mine',MYG);mergeG(myName,MYG,true)}
+function galMine(){const dk=Object.keys(MYG.dy).sort().slice(-10);const dy={};dk.forEach(k=>dy[k]=MYG.dy[k]);return{dy,pl:MYG.pl.slice(-10),pk:MYG.pk.slice(-30),pv:MYG.pv}}
+function mergeG(nm,g,force){if(!nm||!g||typeof g!=='object')return false;nm=String(nm).slice(0,12);let ch=false;
+ const set=(o,k,v)=>{const a=JSON.stringify(o[k]),b=JSON.stringify(v);if(a!==b){o[k]=v;ch=true}};
+ if(g.dy&&typeof g.dy==='object'){const d={};for(const k in g.dy){if(/^\d{4}-\d\d-\d\d$/.test(k)&&typeof g.dy[k]==='string')d[k]=g.dy[k].slice(0,140)}set(GAL.dy,nm,Object.assign({},GAL.dy[nm]||{},d))}
+ if(Array.isArray(g.pl)){for(const x of g.pl){if(Array.isArray(x)&&typeof x[0]==='string'&&typeof x[1]==='string'){const v={t:x[1].slice(0,40),a:String(x[2]||'').slice(0,30),by:nm};if(JSON.stringify(GAL.pl[x[0]])!==JSON.stringify(v)){GAL.pl[x[0]]=v;ch=true}}}
+  for(const id in GAL.pl){if(GAL.pl[id].by===nm&&!g.pl.some(x=>Array.isArray(x)&&x[0]===id)){delete GAL.pl[id];ch=true}}}
+ if(Array.isArray(g.pk))set(GAL.pk,nm,g.pk.filter(x=>typeof x==='string').slice(0,30));
+ if(g.pv&&typeof g.pv==='object'){const v={};for(const k in g.pv){if(typeof g.pv[k]==='string')v[k]=g.pv[k].slice(0,12)}set(GAL.pv,nm,v)}
+ if(ch)lsSet('gal_cache',GAL);return ch}
+function syncGal(){let ch=false;if(joined)ch=mergeG(myName,galMine())||ch;const ps=room?room.peers():[];for(const p of ps){if(p.sameTab)continue;const pr=p.presence||{};if(typeof pr.nm==='string'&&pr.gl)ch=mergeG(pr.nm,pr.gl)||ch}return ch}
+function knownNames(){const s2=new Set();Object.keys(GAL.dy).concat(Object.keys(GAL.pk),Object.keys(GAL.pv)).forEach(n=>s2.add(n));(room?room.peers():[]).forEach(p=>{const n=p.sameTab?(joined?myName:''):p.presence&&p.presence.nm;if(n)s2.add(String(n).slice(0,12))});if(joined)s2.add(myName);return[...s2].filter(Boolean)}
+let galSub='premios';
+// ---- Localização ao vivo ----
+let shareLoc=lsGet('share_loc',false),myLoc=null,geoW=null,LOCS=lsGet('locs_cache',{}),map=null,mapMk={},mapFit=false,leafLoading=false;
+function startGeo(){if(!('geolocation' in navigator)){$('locMsg').textContent='Este navegador não tem localização.';return}
+ if(geoW!=null)return;geoW=navigator.geolocation.watchPosition(pos=>{myLoc=[+pos.coords.latitude.toFixed(5),+pos.coords.longitude.toFixed(5),Math.round(pos.coords.accuracy||0),Date.now()];if(joined){LOCS[myName]=myLoc;lsSet('locs_cache',LOCS)}$('locMsg').textContent='Compartilhando ✓ (precisão de ~'+myLoc[2]+' m)';renderMap()},
+  err=>{$('locMsg').textContent=err.code===1?'Permissão negada. Libere a localização pro navegador nos Ajustes do celular.':'Não consegui pegar a localização agora. Tentando de novo…'},{enableHighAccuracy:true,maximumAge:15000,timeout:20000})}
+function stopGeo(){if(geoW!=null){try{navigator.geolocation.clearWatch(geoW)}catch(e){}geoW=null}myLoc=null}
+function renderLocBtn(){$('locBtn').textContent=shareLoc?'⏸️ Parar de compartilhar':'📍 Compartilhar minha localização';$('locBtn').classList.toggle('on',!shareLoc);if(!shareLoc)$('locMsg').textContent='Você não está compartilhando.'}
+$('locBtn').onclick=()=>{if(!joined){setTab('perfil');return}shareLoc=!shareLoc;lsSet('share_loc',shareLoc);if(shareLoc)startGeo();else{stopGeo();if(LOCS[myName]){delete LOCS[myName];lsSet('locs_cache',LOCS)}}renderLocBtn();renderMap()};
+function loadLeaflet(cb){if(window.L){cb();return}if(leafLoading)return;leafLoading=true;const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(l);
+ const sc=document.createElement('script');sc.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';sc.onload=()=>{leafLoading=false;cb()};sc.onerror=()=>{leafLoading=false;$('mapBox').innerHTML='<p class="status" style="padding:20px">Não consegui carregar o mapa (sem internet?).</p>'};document.head.appendChild(sc)}
+function syncLocs(){let ch=false;for(const p of (room?room.peers():[])){if(p.sameTab)continue;const pr=p.presence||{};const lo=pr.e&&pr.e.lo;if(typeof pr.nm==='string'&&Array.isArray(lo)&&lo.length===4&&lo.every(v=>typeof v==='number')){const n=pr.nm.slice(0,12);if(!LOCS[n]||LOCS[n][3]!==lo[3]){LOCS[n]=lo;ch=true}}}if(ch)lsSet('locs_cache',LOCS);return ch}
+function ago(ts){const m=Math.round((Date.now()-ts)/60000);if(m<1)return'agora';if(m<60)return'há '+m+' min';const h=Math.round(m/60);return h<24?'há '+h+' h':'há '+Math.round(h/24)+' d'}
+function distM(a,b){const R2=6371000,t=Math.PI/180;const dl=(b[0]-a[0])*t,dn=(b[1]-a[1])*t;const x=Math.sin(dl/2)**2+Math.cos(a[0]*t)*Math.cos(b[0]*t)*Math.sin(dn/2)**2;return 2*R2*Math.asin(Math.sqrt(x))}
+function fmtD(m){return m<1000?Math.round(m/10)*10+' m':(m/1000).toFixed(1).replace('.',',')+' km'}
+function colorOf(n){let h=0;for(const ch of n)h=(h*31+ch.charCodeAt(0))>>>0;return FFAC[h%FFAC.length]}
+function renderMap(){if(galSub!=='mapa'||curTab!=='galera')return;syncLocs();if(shareLoc&&joined&&myLoc)LOCS[myName]=myLoc;
+ const ents=Object.entries(LOCS).filter(e=>Date.now()-e[1][3]<36*3600*1000).sort((a,b)=>b[1][3]-a[1][3]);
+ $('locList').innerHTML=ents.length?ents.map(([n,l])=>{const me=n===myName;const d=myLoc&&!me?' · '+fmtD(distM(myLoc,l))+' de você':'';return`<div class="card" style="padding:11px 14px"><div class="plr"><span class="dot" style="background:${colorOf(n)};width:14px;height:14px;border-radius:50%"></span><div style="flex:1"><b>${esc(n)}${me?' (você)':''}</b><div class="m">${ago(l[3])}${d}</div></div><a class="pill" style="text-decoration:none" href="https://www.google.com/maps/search/?api=1&query=${l[0]},${l[1]}" target="_blank" rel="noopener">Abrir</a></div></div>`}).join(''):'<p class="status">Ninguém compartilhou a localização ainda.</p>';
+ loadLeaflet(()=>{if(!map){$('mapBox').innerHTML='';map=L.map('mapBox',{zoomControl:true,attributionControl:true}).setView([-8.507,-35.005],14);
+   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map)}
+  setTimeout(()=>map.invalidateSize(),50);
+  const seen=new Set();for(const[n,l]of ents){seen.add(n);const old=Date.now()-l[3]>10*60*1000;const html=`<div class="pin${old?' old':''}"><div class="b" style="background:${colorOf(n)}">${esc(n.charAt(0).toUpperCase())}</div><div class="l">${esc(n)} · ${ago(l[3])}</div></div>`;
+   const ic=L.divIcon({html,className:'',iconSize:[110,56],iconAnchor:[55,22]});if(mapMk[n]){mapMk[n].setLatLng([l[0],l[1]]);mapMk[n].setIcon(ic)}else mapMk[n]=L.marker([l[0],l[1]],{icon:ic}).addTo(map)}
+  for(const n in mapMk){if(!seen.has(n)){map.removeLayer(mapMk[n]);delete mapMk[n]}}
+  if(!mapFit&&ents.length){mapFit=true;fitAll()}})}
+function fitAll(){if(!map)return;const pts=Object.values(mapMk).map(m=>m.getLatLng());if(pts.length===1)map.setView(pts[0],16);else if(pts.length)map.fitBounds(L.latLngBounds(pts).pad(.3))}
+$('mapAll').onclick=fitAll;$('mapMe').onclick=()=>{if(map&&myLoc)map.setView([myLoc[0],myLoc[1]],17);else if(!shareLoc)$('locMsg').textContent='Ative o compartilhamento pra se ver no mapa.'};
+renderLocBtn();if(shareLoc)setTimeout(startGeo,1500);
+let mapT=0;setInterval(()=>{if(galSub==='mapa'&&curTab==='galera'&&$('lobby').classList.contains('on'))renderMap();else syncLocs()},5000);
+document.querySelectorAll('#galSub button').forEach(b=>b.onclick=()=>{galSub=b.dataset.s;document.querySelectorAll('#galSub button').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.galp').forEach(x=>x.style.display=x.dataset.s===galSub?'':'none');galKey='';renderGal(true);if(galSub==='mapa')renderMap()});
+function renderGal(force){syncGal();const key=JSON.stringify([GAL,MYG,pvShow,galSub,knownNames()]);if(!force&&key===galKey)return;galKey=key;
+ const names=knownNames();
+ if(galSub==='premios'){
+  $('pvList').innerHTML=PREMIOS.map((c,i)=>`<div class="card pvc"><h3>${c}</h3><div class="chips">${names.map(n=>`<button class="chip${MYG.pv[i]===n?' on':''}" data-c="${i}" data-n="${esc(n)}">${esc(n)}</button>`).join('')||'<span class="m">Ninguém na sala ainda</span>'}</div></div>`).join('');
+  $('pvList').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{if(!joined){setTab('perfil');return}const c=b.dataset.c;MYG.pv[c]=MYG.pv[c]===b.dataset.n?undefined:b.dataset.n;if(!MYG.pv[c])delete MYG.pv[c];saveMyG();snd('tick');renderGal(true)});
+  const voters=Object.keys(GAL.pv).filter(n=>Object.keys(GAL.pv[n]||{}).length);
+  $('pvReveal').textContent=pvShow?'🙈 Esconder resultado':`🎉 Revelar vencedores (${voters.length} votaram)`;
+  $('pvRes').innerHTML=!pvShow?'':PREMIOS.map((c,i)=>{const cnt={};for(const n in GAL.pv){const v=GAL.pv[n]&&GAL.pv[n][i];if(v)cnt[v]=(cnt[v]||0)+1}const arr=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);const top=arr.length?arr[0][1]:0;const ws=arr.filter(x=>x[1]===top).map(x=>x[0]);
+   return`<div class="card"><div class="win2"><span class="tro">🏆</span><div><div class="m">${c}</div><h3 style="margin:2px 0 0">${ws.length?ws.map(esc).join(' e '):'Sem votos'}</h3>${top?`<div class="m">${top} voto${top>1?'s':''}</div>`:''}</div></div></div>`}).join('')}
+ if(galSub==='diario'){const today=ymd(new Date());$('dyTitle').textContent='Meu momento de hoje ('+new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'numeric'})+')';
+  if(document.activeElement!==$('dyIn'))$('dyIn').value=MYG.dy[today]||'';$('dyCount').textContent=MYG.dy[today]?'✓ salvo':'';
+  const byDate={};for(const n in GAL.dy){for(const d in GAL.dy[n]){(byDate[d]=byDate[d]||[]).push([n,GAL.dy[n][d]])}}
+  const ds=Object.keys(byDate).sort().reverse();
+  $('dyList').innerHTML=ds.length?ds.map(d=>{const dd=new Date(d+'T12:00:00');return`<div class="dyd"><h4>${DIAS[dd.getDay()]} ${dd.getDate()}/${dd.getMonth()+1}</h4>${byDate[d].map(x=>`<div class="dye"><b>${esc(x[0])}:</b> <span>${esc(x[1])}</span></div>`).join('')}</div>`}).join(''):'<p class="status">Nenhum momento ainda. Seja o primeiro!</p>'}
+ if(galSub==='playlist'){const votes={};for(const n in GAL.pk){(GAL.pk[n]||[]).forEach(id=>{if(GAL.pl[id])(votes[id]=votes[id]||[]).push(n)})}
+  const ids=Object.keys(GAL.pl).sort((a,b)=>((votes[b]||[]).length-(votes[a]||[]).length));
+  $('plList').innerHTML=ids.length?ids.map((id,i)=>{const s2=GAL.pl[id];const v=votes[id]||[];const q=encodeURIComponent(s2.t+' '+s2.a);const mine=MYG.pk.includes(id);const own=s2.by===myName;
+   return`<div class="card"><div class="plr"><span class="n">${i+1}</span><div style="flex:1;min-width:0"><h3 style="margin:0">${esc(s2.t)}</h3><div class="m">${esc(s2.a||'—')} · sugerida por ${esc(s2.by)}</div></div></div>
+   <div class="m" style="margin-top:6px">${v.length?'❤️ '+v.map(esc).join(', '):'Sem votos ainda'}</div>
+   <div class="acts"><button class="${mine?'on':''}" data-pk="${id}">${mine?'❤️ Votei':'🤍 Votar'}</button><a href="https://open.spotify.com/search/${q}" target="_blank" rel="noopener">🟢 Spotify</a><a href="https://www.youtube.com/results?search_query=${q}" target="_blank" rel="noopener">▶️ YouTube</a>${own?`<button data-rm="${id}">🗑️</button>`:''}</div></div>`}).join(''):'<p class="status">Nenhuma música ainda. Sugira a primeira!</p>';
+  $('plList').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{if(!joined){setTab('perfil');return}const id=b.dataset.pk;MYG.pk=MYG.pk.includes(id)?MYG.pk.filter(x=>x!==id):[...MYG.pk,id];saveMyG();snd('tick');renderGal(true)});
+  $('plList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{MYG.pl=MYG.pl.filter(x=>x[0]!==b.dataset.rm);MYG.pk=MYG.pk.filter(x=>x!==b.dataset.rm);delete GAL.pl[b.dataset.rm];lsSet('gal_cache',GAL);saveMyG();renderGal(true)})}}
+$('pvReveal').onclick=()=>{pvShow=!pvShow;if(pvShow){snd('win');try{confetti&&0}catch(e){}}renderGal(true)};
+$('dySave').onclick=()=>{if(!joined){setTab('perfil');return}const v=$('dyIn').value.trim();const k=ymd(new Date());if(v)MYG.dy[k]=v.slice(0,140);else delete MYG.dy[k];saveMyG();$('dyIn').blur();snd('pick');renderGal(true)};
+$('plAdd').onclick=()=>{if(!joined){setTab('perfil');return}const t2=$('plT').value.trim(),a2=$('plA').value.trim();if(!t2)return;if(MYG.pl.length>=10){$('plAdd').textContent='Máximo 10 por pessoa';setTimeout(()=>$('plAdd').textContent='➕ Adicionar',1500);return}
+ const id=myName.replace(/[^A-Za-z0-9]/g,'').slice(0,8)+'_'+(++plN);MYG.pl.push([id,t2.slice(0,40),a2.slice(0,30)]);MYG.pk.push(id);saveMyG();$('plT').value='';$('plA').value='';snd('pick');renderGal(true)};
+// ---- Clima (Open-Meteo, grátis e sem chave) ----
+const WX_URL='https://api.open-meteo.com/v1/forecast?latitude=-8.507&longitude=-35.005&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset&timezone=America%2FSao_Paulo&forecast_days=7';
+let WX=lsGet('wx_cache',null),wxBusy=false;
+function wxInfo(c){c=+c;if(c===0)return['☀️','Céu limpo'];if(c===1)return['🌤️','Poucas nuvens'];if(c===2)return['⛅','Parcialmente nublado'];if(c===3)return['☁️','Nublado'];if(c===45||c===48)return['🌫️','Névoa'];if(c>=51&&c<=57)return['🌦️','Garoa'];if(c>=61&&c<=67)return['🌧️','Chuva'];if(c>=80&&c<=82)return['🌦️','Pancadas de chuva'];if(c>=95)return['⛈️','Trovoadas'];return['🌤️','Tempo variável']}
+function uvTxt(u){u=+u;if(u>=11)return'extremo';if(u>=8)return'muito alto';if(u>=6)return'alto';if(u>=3)return'moderado';return'baixo'}
+function hm(iso){return String(iso||'').slice(11,16)}
+async function loadWx(force){if(wxBusy)return;if(!force&&WX&&Date.now()-WX.at<20*60*1000){renderWx();return}wxBusy=true;$('wxSrc').textContent='Atualizando…';
+ try{const r=await fetch(WX_URL,{cache:'no-store'});if(!r.ok)throw new Error(r.status);const j=await r.json();WX={at:Date.now(),j};lsSet('wx_cache',WX)}catch(e){$('wxSrc').textContent=WX?'Sem internet agora: mostrando a última previsão salva.':'Não consegui buscar o clima (sem internet?). Toque em Atualizar depois.'}
+ wxBusy=false;renderWx();if(curTab==='inicio')renderHome(peersList())}
+function renderWx(){if(!WX||!WX.j||!WX.j.current){return}const j=WX.j,c=j.current,d=j.daily;const ic=wxInfo(c.weather_code);
+ $('wxNow').innerHTML=`<div class="wxnow"><span class="em">${ic[0]}</span><div><div class="t">${Math.round(c.temperature_2m)}°</div><div class="m">${ic[1]} · sensação ${Math.round(c.apparent_temperature)}°<br>Vento ${Math.round(c.wind_speed_10m)} km/h · umidade ${Math.round(c.relative_humidity_2m)}%</div></div></div>`;
+ const uv=d.uv_index_max&&d.uv_index_max[0];
+ $('wxSun').innerHTML=`<div class="sunrow"><div>🌅 Nascer<b>${hm(d.sunrise[0])}</b></div><div>🌇 Pôr do sol<b>${hm(d.sunset[0])}</b></div><div>🧴 UV máx.<b>${uv!=null?Math.round(uv):'—'}</b>${uv!=null?uvTxt(uv):''}</div></div>${uv>=8?'<div class="how" style="font-size:.85rem;margin-top:10px">☀️ <b>UV muito alto hoje.</b> Passe protetor a cada 2 horas e evite o sol forte das 10h às 15h.</div>':''}`;
+ $('wxDays').innerHTML=d.time.map((t,i)=>{const dd=new Date(t+'T12:00:00');const w=wxInfo(d.weather_code[i]);return`<div>${i===0?'Hoje':DIAS[dd.getDay()]}<span class="em">${w[0]}</span>${Math.round(d.temperature_2m_max[i])}° / ${Math.round(d.temperature_2m_min[i])}°<div class="rn">💧 ${d.precipitation_probability_max[i]!=null?d.precipitation_probability_max[i]:0}%</div></div>`}).join('');
+ const at=new Date(WX.at);$('wxSrc').textContent='Previsão de Open-Meteo para Porto de Galinhas · atualizada às '+String(at.getHours()).padStart(2,'0')+':'+String(at.getMinutes()).padStart(2,'0')}
+$('wxRefresh').onclick=()=>loadWx(true);
+setTimeout(()=>loadWx(false),800);
 const TIPS=['Compre a jangada das piscinas naturais só no guichê oficial dos jangadeiros, no portal da praia.','Passe protetor solar a cada 2 horas, e de novo depois de sair da água.','Buggy e quadriciclo são cobrados por veículo: dividam entre os 4!','Nas piscinas naturais, não pise nos corais e não alimente os peixes.','Pôr do sol bonito: Pontal de Maracaípe, onde o rio encontra o mar.','Leve dinheiro ou Pix: muita barraca e jangada não aceita cartão.','Na alta temporada, chegue cedo nos restaurantes da Rua Esperança.','Muro Alto tem água calma o dia todo: boa pra caiaque e stand up.'];
 function renderHome(players){players=players||[];const now2=new Date();const h=now2.getHours();const sau=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
  const dt=now2.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
@@ -393,9 +546,10 @@ function renderHome(players){players=players||[];const now2=new Date();const h=n
  $('hMare').innerHTML=`<span class="lab">🌊 Maré baixa hoje</span><span class="big">${mt}</span><span class="sm">${mv}</span>`;
  const c=voteCounts();const top=Object.entries(c).sort((a,b)=>b[1].length-a[1].length)[0];const r=top&&COMER.find(x=>x[0]===top[0]);
  $('hComer').innerHTML=`<span class="lab">🍽️ Onde comer</span><span class="big">${r?esc(r[1]):'Vote!'}</span><span class="sm">${r?top[1].length+' voto'+(top[1].length>1?'s':''):'Ninguém votou ainda'}</span>`;
+ if(WX&&WX.j&&WX.j.current){const c=WX.j.current,d=WX.j.daily;const ic=wxInfo(c.weather_code);$('hWx').innerHTML=`<span class="em">${ic[0]}</span><span><span class="t">${Math.round(c.temperature_2m)}°</span><span class="sm" style="display:block">${ic[1]} · pôr do sol ${hm(d.sunset[0])} · UV ${d.uv_index_max?Math.round(d.uv_index_max[0]):'—'}</span></span>`}else $('hWx').innerHTML='<span class="em">🌤️</span><span><span class="lab">Clima</span><span class="sm" style="display:block">Toque pra ver a previsão</span></span>';
  $('hTip').innerHTML=`<b>💡 Dica do dia</b><br>${esc(TIPS[(now2.getDate()+now2.getMonth())%TIPS.length])}`;
  $('avatarBtn').textContent=joined&&myName?myName.charAt(0).toUpperCase():'👤'}
-$('hMare').onclick=()=>setTab('mares');$('hComer').onclick=()=>setTab('comer');
+$('hMare').onclick=()=>setTab('mares');$('hWx').onclick=()=>setTab('mares');$('hComer').onclick=()=>setTab('comer');
 document.querySelectorAll('.quick [data-go]').forEach(b=>b.onclick=()=>setTab(b.dataset.go));
 $('avatarBtn').onclick=()=>setTab('perfil');$('goRank').onclick=()=>setTab('ranking');$('backJogos').onclick=()=>setTab('jogos');
 document.querySelectorAll('#filt button').forEach(b=>b.onclick=()=>{const f=b.dataset.f;document.querySelectorAll('#filt button').forEach(x=>x.classList.toggle('on',x===b));
@@ -461,7 +615,7 @@ const CONT=[
  ['MarIA · assistente oficial do destino','Assistente do Porto de Galinhas Convention & Visitors Bureau, que responde 24h no WhatsApp. Ela indica passeios, restaurantes e serviços cadastrados.',[['📷 @portodegalinhas','https://www.instagram.com/portodegalinhas/']]]];
 function renderPasseios(){$('passList').innerHTML=PASS.map(p=>`<div class="card"><h3>${p[0]} ${esc(p[1])}</h3><div class="pr">${esc(p[2])}</div><div class="m" style="margin-top:4px">${esc(p[3])}</div></div>`).join('');
  $('contList').innerHTML=CONT.map(c=>`<div class="card"><h3>${esc(c[0])}</h3><div class="m">${esc(c[1])}</div>${c[2].length?`<div class="acts">${c[2].map(a=>`<a href="${a[1]}" target="_blank" rel="noopener">${esc(a[0])}</a>`).join('')}</div>`:''}</div>`).join('')}
-function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));const tb=t==='ranking'?'jogos':t;document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===tb));if(t==='ranking')showRank();if(t==='inicio')renderHome(peersList());if(t==='mares')renderMares();if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
+function setTab(t){curTab=t;document.querySelectorAll('.tabp').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));const tb=t==='ranking'?'jogos':t;document.querySelectorAll('#tabbar button').forEach(x=>x.classList.toggle('on',x.dataset.t===tb));if(t==='ranking')showRank();if(t==='inicio')renderHome(peersList());if(t==='mares'){renderMares();loadWx(false)}if(t==='galera'){renderGal(true);if(galSub==='mapa')renderMap()}if(t==='comer')renderComer(true);if(t==='passeios')renderPasseios();try{$('lobby').scrollTop=0}catch(e){}}
 document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));
 function renderAc(){$('acs').innerHTML=ACS.map((a,i)=>`<button class="chip${i===myAc?' on':''}" data-i="${i}">${a}</button>`).join('');
  $('acs').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{myAc=+b.dataset.i;saveMe();renderAc()});
@@ -536,7 +690,7 @@ function peersList(){
  if(!mineSeen&&joined)out.push(mePeer());
  return out}
 function mePeer(){return{peer:myPeer||'me',me:true,nm:myName,tm:myTeam,x:pos.x,y:pos.y,d:dir,st:now()<stunUntil,ds:now()<dashUntil,got,hit:hitCount,go:goCount,ve:myVote,gp,fs,hb,dd:now()<deadUntil,e:myExtra(),w:null}}
-function myExtra(){const e={ac:myAc,acc:myAcc};if(myRv)e.rv=myRv;if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;if(curG==='roleta'&&myRp)e.rp=myRp;if(curG==='cobra'){e.sb=snDead?[]:encB();e.fg=sfg;e.dc=sdc;e.ln=Math.floor(sln);if(skb)e.kb=skb}return e}
+function myExtra(){const e={ac:myAc,acc:myAcc};if(myRv)e.rv=myRv;if(shareLoc&&myLoc)e.lo=myLoc;if(curG==='balao'){e.bl=bl;e.pb=pb}if(curG==='buggy'){e.lp=lp;e.pg=+pgv.toFixed(3)}if(curG==='quiz'&&myQa)e.qa=myQa;if(curG==='desenho'){e.dr=dr.slice(-80);if(gs)e.gs=gs}if(curG==='impostor'){if(myIc)e.ic=myIc;if(myIv)e.iv=myIv}if(curG==='stop'){e.sa=[stopR,stopAns];if(stopPress)e.sp=[stopR]}if(curG==='voto'&&myVv)e.vv=myVv;if(curG==='memoria'&&myMk)e.mk=myMk;if(curG==='roleta'&&myRp)e.rp=myRp;if(curG==='cobra'){e.sb=snDead?[]:encB();e.fg=sfg;e.dc=sdc;e.ln=Math.floor(sln);if(skb)e.kb=skb}return e}
 let sPath=[],sln=10,sang=-Math.PI/2,sfg=[],sdc=0,skb='',snDead=false,sDeadUntil=0,sBoostT=0,sEaten=new Set();
 function encB(){const b=snBody();const o=[];for(const q of b){o.push(Math.round(q[0]*1000),Math.round(q[1]*1000))}return o}
 function snBody(){const n=Math.min(150,Math.floor(sln));const out=[];if(!sPath.length)return out;let need=0,acc=0;out.push(sPath[0]);for(let i=1;i<sPath.length&&out.length<n;i++){const a=sPath[i-1],b=sPath[i];acc+=Math.hypot(a[0]-b[0],a[1]-b[1]);if(acc>=SEG){out.push(b);acc=0}}return out}
@@ -769,7 +923,7 @@ function frame(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;const t=now();
  // presence
  if(room&&connected){pushT-=dt;if(pushT<=0){pushT=1/24;
   const pr=joined?{nm:myName,tm:myTeam,x:+pos.x.toFixed(3),y:+pos.y.toFixed(3),d:+dir.toFixed(2),st:t<stunUntil?1:0,ds:t<dashUntil?1:0,got,hit:hitCount,go:goCount,ve:myVote,gp,fs,hb,dd:t<deadUntil?1:0,e:myExtra(),w:iHost?hw:null}:{nm:null,w:null};
-  if(pr.e&&pr.e.dr&&JSON.stringify(pr).length>3900){pr.e.dr=pr.e.dr.slice(-3)}
+  if(joined)pr.gl=world.ph==='play'?null:galMine();
   room.presence(pr).catch(()=>{})}}
  draw(world,players,t,dt);
  if($('lobby').classList.contains('on'))lobbyTick(players,world,iHost);
@@ -813,7 +967,7 @@ function rp(p){if(p.me)return pos;let r=rpos[p.peer];if(!r){r=rpos[p.peer]={x:p.
 
 // ---------- lobby / end ----------
 let lobT=0;
-function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();
+function lobbyTick(players,world,iHost){lobT-=1/60;if(lobT>0)return;lobT=.3;if(curTab==='comer')renderComer();if(curTab==='galera'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA')renderGal();else if(lobT===.3&&Math.random()<.2)syncGal();
  const plk=JSON.stringify(players.map(p=>[p.nm,p.tm,p.me]));if($('plist')._k!==plk){$('plist')._k=plk;$('plist').innerHTML=players.length?players.map(p=>`<div class="pl"><span class="dot ${p.tm}"></span>${esc(p.nm)}${p.me?' <span class="me">você</span>':''}</div>`).join(''):'<div class="pl" style="color:#b9cfd3">Ninguém ainda</div>'}
  if(curTab==='inicio')renderHome(players);
  const inPlay=world.ph==='play';$('games').style.display=!inPlay?'block':'none';$('needProfile').style.display=joined||curTab==='perfil'?'none':'block';document.querySelectorAll('.gc').forEach(b=>b.disabled=!joined);$('joinPlay').style.display=joined&&inPlay?'block':'none';
